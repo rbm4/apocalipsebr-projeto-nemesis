@@ -2,6 +2,8 @@ if not isServer() then
 	return
 end
 
+require "RegionManager_ZombieModules"
+
 ApocNemesisBoss = ApocNemesisBoss or {}
 
 local Config = {
@@ -83,9 +85,8 @@ local function applyBossTuning(zombie)
 
 	zombieData.ApocNemesisBossApplied = true
 	zombieData.ApocNemesisBoss = true
-	if zombie:getHealth() < Config.BossHealth then
-		zombie:setHealth(Config.BossHealth)
-	end
+	-- Health is now handled by the regioes module stats (isTough + maxHits)
+	-- and bossHealth override in the module registration.
 	log("Applied boss tuning to Nemesis zombie")
 end
 
@@ -236,3 +237,55 @@ local function onEveryOneMinute()
 end
 
 Events.EveryOneMinute.Add(onEveryOneMinute)
+
+-- ============================================================================
+-- Register Nemesis as a zombie module with the regioes framework.
+-- Stats, sounds, and behavior are declared here; execution is handled by the
+-- framework's confirmZombie pipeline and ZombieModuleClient engine.
+-- ============================================================================
+
+local function registerNemesisModule()
+	loadConfig()
+
+	RegionManager.ZombieModules.register({
+		id = "nemesis",
+		outfitNames = { Config.OutfitName or "Nemesis", "MrX" },
+		stats = {
+			isSprinter      = true,
+			isTough         = true,
+			maxHits         = 10,
+			bossHealth      = Config.BossHealth or 4.5,
+			isSuperhuman    = true,
+			hawkVision      = true,
+			pinpointHearing = true,
+			hasNavigation   = true,
+			hasMemoryLong   = true,
+			killBonus       = 50,
+		},
+		sounds = {
+			suppressVanilla = true,
+			theme    = { name = "ApocNemesis_Theme", range = 60, loop = true },
+			onDetect = { name = "ApocNemesis_STARS", range = 40 },
+			periodic = {
+				{
+					names = { "ApocNemesis_Roar1", "ApocNemesis_Roar2", "ApocNemesis_RWOAR" },
+					cooldownTicks = 480,
+					chance = 40,
+				},
+			},
+			onHit = {
+				{
+					names = { "ApocNemesis_Grunt1", "ApocNemesis_Grunt2" },
+					chance = 50,
+				},
+			},
+		},
+		behavior = {
+			redirectToPlayer      = true,
+			redirectCooldownTicks = 300,
+			detectionRange        = 80,
+		},
+	})
+end
+
+Events.OnInitWorld.Add(registerNemesisModule)
