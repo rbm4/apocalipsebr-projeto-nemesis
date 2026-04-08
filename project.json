@@ -1,0 +1,20 @@
+{
+    "$schema": "https://raw.githubusercontent.com/escapepz/project-zomboid-studio/refs/heads/b42.13.1/pzstudio.schema.json",
+    "title": "ApocalipseBR Projeto Nemesis",
+    "authors": [
+        "Hypothetic"
+    ],
+    "workshop": {
+        "visibility": "unlisted",
+        "tags": [
+            "Build 42"
+        ],
+        "excludes": []
+    },
+    "mods": {
+        "ApocalipseBrProjetoNemesis": {
+            "name": "ApocalipseBR Projeto Nemesis",
+            "description": "Adds Nemesis and MrX outfit ports plus a server-side escalating Nemesis boss spawn system."
+        }
+    }
+}

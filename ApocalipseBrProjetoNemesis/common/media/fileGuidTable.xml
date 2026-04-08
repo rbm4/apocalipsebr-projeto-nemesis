@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fileGuidTable>
+
+	<files>
+		<path>media/clothing/clothingItems/Nemesis.xml</path>
+		<guid>5ac8dca1-469e-42ff-9f1d-9b47461568f7</guid>
+	</files>
+	<files>
+		<path>media/clothing/clothingItems/MrX.xml</path>
+		<guid>bfda5571-3e61-46c0-9ca4-e4022835f781</guid>
+	</files>
+
+</fileGuidTable>

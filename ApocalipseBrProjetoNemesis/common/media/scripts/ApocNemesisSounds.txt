@@ -1,0 +1,93 @@
+module Base
+{
+	sound ApocNemesis_Theme
+	{
+		category = Vehicle,
+		loop = true,
+		is3D = true,
+		clip
+		{
+			file = media/sound/theme.ogg,
+			distanceMax = 120,
+			volume = 0.20f,
+		}
+	}
+
+	sound ApocNemesis_STARS
+	{
+		category = Vehicle,
+		loop = false,
+		is3D = true,
+		clip
+		{
+			file = media/sound/STARS.ogg,
+			distanceMax = 80,
+			volume = 0.80f,
+		}
+	}
+
+	sound ApocNemesis_Grunt1
+	{
+		category = Vehicle,
+		loop = false,
+		is3D = true,
+		clip
+		{
+			file = media/sound/grunting.ogg,
+			distanceMax = 40,
+			volume = 0.50f,
+		}
+	}
+
+	sound ApocNemesis_Grunt2
+	{
+		category = Vehicle,
+		loop = false,
+		is3D = true,
+		clip
+		{
+			file = media/sound/grunting-2.ogg,
+			distanceMax = 40,
+			volume = 0.50f,
+		}
+	}
+
+	sound ApocNemesis_Roar1
+	{
+		category = Vehicle,
+		loop = false,
+		is3D = true,
+		clip
+		{
+			file = media/sound/roaring.ogg,
+			distanceMax = 80,
+			volume = 0.60f,
+		}
+	}
+
+	sound ApocNemesis_Roar2
+	{
+		category = Vehicle,
+		loop = false,
+		is3D = true,
+		clip
+		{
+			file = media/sound/roaring-2.ogg,
+			distanceMax = 80,
+			volume = 0.60f,
+		}
+	}
+
+	sound ApocNemesis_RWOAR
+	{
+		category = Vehicle,
+		loop = false,
+		is3D = true,
+		clip
+		{
+			file = media/sound/RWOAR.ogg,
+			distanceMax = 100,
+			volume = 0.70f,
+		}
+	}
+}
