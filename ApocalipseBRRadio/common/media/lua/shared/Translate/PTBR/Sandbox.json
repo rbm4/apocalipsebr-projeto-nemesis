@@ -1,0 +1,23 @@
+{
+    "Sandbox_ApocalipseBRRadio": "APOCALIPSE [BR] - Radio",
+    "Sandbox_ApocalipseBRRadio_Language": "Idioma das Transmissoes",
+    "Sandbox_ApocalipseBRRadio_Language_tooltip": "Idioma usado nas transmissoes de radio. Todos os jogadores ouvem no mesmo idioma.",
+    "Sandbox_ApocalipseBRRadio_Language_option1": "English",
+    "Sandbox_ApocalipseBRRadio_Language_option2": "Portugues (Brasil)",
+    "Sandbox_ApocalipseBRRadio_KeepRadioAlive": "Manter Radio Ativo",
+    "Sandbox_ApocalipseBRRadio_KeepRadioAlive_tooltip": "Impede o silencio do radio apos o fim das transmissoes originais. Transmissoes personalizadas continuarao indefinidamente.",
+    "Sandbox_ApocalipseBRRadio_TransmissionInterval": "Intervalo de Transmissao (minutos)",
+    "Sandbox_ApocalipseBRRadio_TransmissionInterval_tooltip": "Media de minutos no jogo entre transmissoes personalizadas. Menor = mais frequente. Padrao: 5.",
+    "Sandbox_ApocalipseBRRadio_EnableEmergencyBroadcast": "Ativar Transmissoes de Emergencia",
+    "Sandbox_ApocalipseBRRadio_EnableEmergencyBroadcast_tooltip": "Ativa o canal do Sistema de Alerta de Emergencia (91.6 MHz) com avisos governamentais e ordens de evacuacao.",
+    "Sandbox_ApocalipseBRRadio_EnableCreepyTransmissions": "Ativar Transmissoes Sinistras",
+    "Sandbox_ApocalipseBRRadio_EnableCreepyTransmissions_tooltip": "Ativa o canal Radio Fantasma (66.6 MHz) com transmissoes assustadoras e perturbadoras no estilo creepypasta.",
+    "Sandbox_ApocalipseBRRadio_EnableRadioApocalipse": "Ativar Radio Apocalipse",
+    "Sandbox_ApocalipseBRRadio_EnableRadioApocalipse_tooltip": "Ativa o canal principal Radio Apocalipse (104.2 MHz) com transmissoes de sobreviventes e noticias da comunidade.",
+    "Sandbox_ApocalipseBRRadio_EnableMilitaryComms": "Ativar Comunicacoes Militares",
+    "Sandbox_ApocalipseBRRadio_EnableMilitaryComms_tooltip": "Ativa o canal de Comunicacoes Militares (310 kHz) com transmissoes taticas e classificadas.",
+    "Sandbox_ApocalipseBRRadio_EnableNumbersStation": "Ativar Estacao de Numeros",
+    "Sandbox_ApocalipseBRRadio_EnableNumbersStation_tooltip": "Ativa a misteriosa Estacao de Numeros (47.8 MHz) com transmissoes criptografadas.",
+    "Sandbox_ApocalipseBRRadio_EnableAlexandriaLibrary": "Ativar a Biblioteca de Alexandria",
+    "Sandbox_ApocalipseBRRadio_EnableAlexandriaLibrary_tooltip": "Ativa o canal da Biblioteca de Alexandria (108.0 MHz). Uma misteriosa Bibliotecaria monitora todas as frequencias e retransmite seus comentarios sobre o que ouve."
+}

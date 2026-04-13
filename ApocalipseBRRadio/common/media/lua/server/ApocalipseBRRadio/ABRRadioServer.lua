@@ -106,7 +106,8 @@ local function registerChannelsWithGame()
     local count = 0
     for id, channel in pairs(ABRRadio.channels) do
         if ABRRadio.isChannelEnabled(id) then
-            radio:addChannelName(channel.name, channel.frequency, channel.category)
+            local displayName = ABRRadio.resolveChannelName(channel)
+            radio:addChannelName(displayName, channel.frequency, channel.category)
             ABRRadioServer.cooldowns[id] = ZombRand(1, 4)
             count = count + 1
         end
@@ -202,16 +203,16 @@ local function dispatchCommand(channelId, transmission)
     print("[ABRRadio Server] Dispatching command '" .. transmission.command .. "' to " .. #listenerIds .. " listeners.")
 
     -- Build args table to send to each client
-    local cmdArgs = transformIntoKahluaTable({
+    local cmdArgs = {
         command     = transmission.command,
         channelId   = channelId,
         txId        = transmission.id,
-    })
+    }
 
     -- Merge custom commandArgs if defined
     if transmission.commandArgs then
         for k, v in pairs(transmission.commandArgs) do
-            cmdArgs:rawset(k, v)
+            cmdArgs[k] = v
         end
     end
 
@@ -288,29 +289,22 @@ local function processBroadcasts()
 end
 
 
---- Override postRadioSilence to keep radios discoverable on the channel list.
---- The vanilla game sets this to true after day 14, which notifies clients
---- that radio is "silent". Our custom transmissions work regardless, but
---- resetting this flag improves UX.
+--- Keep radios discoverable on the channel list past day 14.
+--- NOTE: The vanilla ZomboidRadio.update() sets the static boolean
+--- `postRadioSilence = true` after daysSinceStart > 14, which tells clients
+--- the radio is "silent". There is no setter method exposed for this field
+--- (unlike disableBroadcasting which has setDisableBroadcasting), and Kahlua
+--- does not support writing to Java static fields directly from Lua.
+--- Additionally, update() re-sets it to true every tick, so even a successful
+--- write would be immediately reverted.
+---
+--- Our custom transmissions work regardless of postRadioSilence because
+--- SendTransmission bypasses the silence flag. The only effect is cosmetic:
+--- clients may see a "no signal" indicator in the radio UI, but broadcasts
+--- still arrive. We keep this function as a no-op placeholder in case a
+--- future PZ build exposes a setter or Lua-writable field.
 local function keepRadioAlive()
-    if not SandboxVars or not SandboxVars.ApocalipseBRRadio then return end
-    if not SandboxVars.ApocalipseBRRadio.KeepRadioAlive then return end
-
-    local radio = ABRRadio.getRadio()
-    local radioType = type(radio)
-    if radioType ~= "table" and radioType ~= "userdata" then return end
-
-    -- Reset the postRadioSilence flag
-    -- This is a public static boolean on ZomboidRadio
-    local ok, err = pcall(function()
-        radio.postRadioSilence = false
-    end)
-    if not ok then
-        -- If direct field access fails, try class-level access
-        pcall(function()
-            ZomboidRadio.postRadioSilence = false
-        end)
-    end
+    -- No-op: postRadioSilence is not writable from Lua (no setter in ZomboidRadio).
 end
 
 
@@ -349,7 +343,7 @@ end
 
 
 -- Register event hooks
-Events.EveryOneMinute.Add(onEveryOneMinute)
+Events.EveryTenMinutes.Add(onEveryOneMinute)
 Events.OnLoadRadioScripts.Add(onLoadRadioScripts)
 
 
@@ -364,7 +358,7 @@ local function onClientCommand(module, command, player, args)
 
     if command == "ListenerReport" then
         -- Client is reporting that they heard a line on a channel
-        local channelId = args and args:rawget("channelId")
+        local channelId = args and args["channelId"]
         local onlineId = tostring(player:getOnlineID())
         local username = player:getUsername() or "unknown"
 

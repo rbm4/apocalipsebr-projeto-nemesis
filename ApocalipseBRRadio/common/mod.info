@@ -1,7 +1,7 @@
-name=APOCALIPSE BR - Radio
+name=APOCALIPSE BR - Radio Framework
 id=apocalipsebrradio
 description=Custom radio framework for Project Zomboid B42. Adds custom radio channels with creepy, emergency, military, and survivor transmissions. Keeps radios alive after vanilla broadcasts end. Fully configurable via sandbox options.
 poster=poster.png
 url=https://apocalipse.cloud
 author=Hypothetic
-versionMin=42.13.0
+versionMin=42

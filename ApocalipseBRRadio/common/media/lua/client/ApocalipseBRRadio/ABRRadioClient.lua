@@ -79,9 +79,7 @@ local function reportListenerToServer(channelId)
     end
 
     -- Multiplayer: send via network
-    local args = transformIntoKahluaTable({
-        channelId = channelId,
-    })
+    local args = { channelId = channelId }
     sendClientCommand(player, ABRRadio.NET_MODULE, "ListenerReport", args)
 end
 
@@ -133,7 +131,7 @@ local function onServerCommand(module, command, args)
     if module ~= ABRRadio.NET_MODULE then return end
 
     if command == "EventCommand" then
-        local cmdName = args and args:rawget("command")
+        local cmdName = args and args["command"]
         if not cmdName then
             print("[ABRRadio Client] Received EventCommand with no command name.")
             return

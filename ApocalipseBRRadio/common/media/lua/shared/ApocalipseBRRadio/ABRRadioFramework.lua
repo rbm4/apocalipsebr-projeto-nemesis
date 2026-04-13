@@ -1,5 +1,5 @@
 --[[
-    APOCALIPSE [BR] - Radio Framework v1.0.0
+    APOCALIPSE [BR] - Radio Framework v2.0.0
     Core API for custom radio channel and transmission management.
 
     This framework provides a simple, data-driven API to register custom radio
@@ -10,7 +10,7 @@
         -- Register a channel
         ABRRadio.registerChannel({
             id = "my_channel",
-            name = "My Channel Name",
+            name = { EN = "My Channel", PTBR = "Meu Canal" },
             frequency = 95000,
             category = "Radio",
             color = { r = 0.0, g = 0.8, b = 0.0 },
@@ -21,30 +21,39 @@
         -- Register transmissions for that channel
         ABRRadio.registerTransmission("my_channel", {
             id = "tx_greeting",
-            lines = { "UI_MY_LINE_01", "UI_MY_LINE_02", "<bzzt>" },
+            lines = {
+                { EN = "Hello survivors!", PTBR = "Ola sobreviventes!" },
+                { EN = "Stay safe.", PTBR = "Fiquem seguros." },
+                "<bzzt>",
+            },
             weight = 10,
         })
 
         -- Trigger an immediate one-shot transmission (for events)
         ABRRadio.triggerImmediate("my_channel", {
-            "UI_MY_EVENT_LINE_01",
-            "UI_MY_EVENT_LINE_02",
+            { EN = "Breaking news!", PTBR = "Noticia urgente!" },
         })
 
-    NOTES:
-        - Lines starting with "UI_" or "IGUI_" are resolved via getText() (translation system)
+    TRANSLATION:
+        - The broadcast language is set by the server admin via sandbox option
+          SandboxVars.ApocalipseBRRadio.Language (1 = English, 2 = Portugues BR)
+        - Lines can be: tables with language keys, or plain strings for static sounds
         - Static sounds (<bzzt>, <fzzt>, <wzzt>, <szzt>) pass through as-is
-        - Lines can be strings or tables: { text = "...", color = {r,g,b}, codes = "..." }
+        - Fallback order: selected language -> EN -> first available -> raw key
         - Signal strength -1 means infinite range (reaches all players)
         - Channels can be tied to sandbox options for easy toggling
 ]]
 
 ABRRadio = ABRRadio or {}
 
-ABRRadio.VERSION = "1.1.0"
+ABRRadio.VERSION = "2.0.0"
 
 -- Module name for sendServerCommand / sendClientCommand networking
 ABRRadio.NET_MODULE = "ABRRadio"
+
+-- Supported language codes mapped from sandbox integer values
+ABRRadio.LANGUAGES = { [1] = "EN", [2] = "PTBR" }
+ABRRadio.DEFAULT_LANG = "EN"
 
 -- Channel registry: channelId -> channel config
 ABRRadio.channels = {}
@@ -60,6 +69,21 @@ ABRRadio.immediateQueue = {}
 
 -- Client-side command handlers: commandName -> handler function(player, args)
 ABRRadio.commandHandlers = {}
+
+
+--- Get the configured broadcast language code.
+--- Reads from SandboxVars.ApocalipseBRRadio.Language (integer).
+--- @return string Language code ("EN", "PTBR")
+function ABRRadio.getLanguage()
+    if SandboxVars and SandboxVars.ApocalipseBRRadio
+        and SandboxVars.ApocalipseBRRadio.Language then
+        local langId = SandboxVars.ApocalipseBRRadio.Language
+        if ABRRadio.LANGUAGES[langId] then
+            return ABRRadio.LANGUAGES[langId]
+        end
+    end
+    return ABRRadio.DEFAULT_LANG
+end
 
 
 --- Get the ZomboidRadio singleton instance.
@@ -78,7 +102,8 @@ end
 --- Register a custom radio channel.
 --- @param config table Channel configuration:
 ---   id             (string)  [REQUIRED] Unique channel identifier
----   name           (string)  Display name shown in radio UI
+---   name           (table|string)  Display name: { EN = "...", PTBR = "..." } or plain string
+---   description    (table|string)  Channel description: { EN = "...", PTBR = "..." } or plain string
 ---   frequency      (number)  Broadcast frequency (e.g. 91600 = 91.6 MHz)
 ---   category       (string)  "Radio"|"Emergency"|"Military"|"Amateur"|"Other"|"Television"|"Bandit"
 ---   color          (table)   Default line color { r, g, b } in 0.0-1.0 range
@@ -102,6 +127,7 @@ function ABRRadio.registerChannel(config)
     ABRRadio.channels[config.id] = {
         id              = config.id,
         name            = config.name or "Unknown Channel",
+        description     = config.description or nil,
         frequency       = config.frequency or 91400,
         category        = config.category or "Radio",
         color           = config.color or { r = 0.0, g = 0.8, b = 0.0 },
@@ -120,7 +146,8 @@ function ABRRadio.registerChannel(config)
     -- Register reverse frequency lookup
     ABRRadio.frequencyToChannel[ABRRadio.channels[config.id].frequency] = config.id
 
-    print("[ABRRadio] Registered channel: " .. (config.name or config.id) .. " @ " .. (config.frequency or "?"))
+    local displayName = ABRRadio.resolveText(config.name)
+    print("[ABRRadio] Registered channel: " .. displayName .. " @ " .. (config.frequency or "?"))
     return true
 end
 
@@ -222,30 +249,49 @@ function ABRRadio.getRandomTransmission(channelId, currentDay)
 end
 
 
+--- Resolve any translatable value to a display string.
+--- Accepts: { EN = "...", PTBR = "..." } tables, plain strings, or nil.
+--- Fallback order: configured language -> EN -> first available value -> ""
+--- @param value string|table|nil The value to resolve
+--- @return string The resolved text
+function ABRRadio.resolveText(value)
+    if type(value) == "string" then
+        return value
+    end
+    if type(value) == "table" then
+        local lang = ABRRadio.getLanguage()
+        if value[lang] then return value[lang] end
+        if value["EN"] then return value["EN"] end
+        -- Fallback: return first available value
+        for _, v in pairs(value) do
+            if type(v) == "string" then return v end
+        end
+    end
+    return ""
+end
+
+
 --- Resolve a line to its display text.
---- Handles: plain strings, translation keys (UI_/IGUI_ prefix), and table entries.
+--- Handles: i18n tables { EN = "...", PTBR = "..." }, plain strings, and
+--- table entries with a nested text field.
 --- Static sounds (<bzzt>, <fzzt>, <wzzt>, <szzt>) pass through unchanged.
 --- @param line string|table The line to resolve
 --- @return string The resolved display text
 function ABRRadio.resolveLineText(line)
-    local text
-    if type(line) == "table" then
-        text = line.text or ""
-    elseif type(line) == "string" then
-        text = line
-    else
-        return ""
+    if type(line) == "string" then
+        return line
     end
-
-    -- Resolve translation keys
-    if getText and (string.find(text, "^UI_") or string.find(text, "^IGUI_")) then
-        local translated = getText(text)
-        if translated and translated ~= text then
-            return translated
+    if type(line) == "table" then
+        -- If it has language keys (EN/PTBR), resolve as i18n
+        if line.EN or line.PTBR then
+            return ABRRadio.resolveText(line)
+        end
+        -- Legacy format: { text = "...", color = ..., codes = ... }
+        if line.text then
+            return ABRRadio.resolveText(line.text)
         end
     end
-
-    return text
+    return ""
 end
 
 
@@ -314,6 +360,14 @@ function ABRRadio.getChannel(channelId)
 end
 
 
+--- Resolve the display name for a channel.
+--- @param channel table Channel config table
+--- @return string The resolved display name
+function ABRRadio.resolveChannelName(channel)
+    return ABRRadio.resolveText(channel.name)
+end
+
+
 --- Get the number of registered transmissions for a channel.
 --- @param channelId string
 --- @return number
@@ -348,15 +402,22 @@ end
 
 --- Build a resolved text lookup table for a transmission's lines.
 --- Used by the client to match incoming OnDeviceText lines to known transmissions.
+--- Includes ALL language variants so matching works regardless of server language.
 --- @param tx table Transmission definition
 --- @return table Set of resolved text strings (text -> true)
 function ABRRadio.buildTransmissionTextSet(tx)
     local textSet = {}
     if tx and tx.lines then
         for _, line in ipairs(tx.lines) do
-            local text = ABRRadio.resolveLineText(line)
-            if text and text ~= "" then
-                textSet[text] = true
+            if type(line) == "table" then
+                -- Add every language variant for matching
+                for lang, text in pairs(line) do
+                    if type(text) == "string" and text ~= "" then
+                        textSet[text] = true
+                    end
+                end
+            elseif type(line) == "string" and line ~= "" then
+                textSet[line] = true
             end
         end
     end

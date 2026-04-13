@@ -1,24 +1,29 @@
 --[[
-    APOCALIPSE [BR] - Radio Transmissions
+    APOCALIPSE [BR] - Radio Transmissions v2.0.0
     Channel definitions and transmission content registration.
 
-    This file defines five custom radio channels and their transmission pools.
-    All transmission text uses translation keys (UI_ABR_*) resolved at broadcast
-    time via the game's translation system (EN + PTBR supported).
+    This file registers all custom radio channels and loads their transmission
+    pools from individual files. Each channel has its own dedicated file under
+    the ApocalipseBRRadio/ directory.
 
-    TO ADD NEW TRANSMISSIONS:
-        Simply call ABRRadio.registerTransmission() with your channel ID and content.
-        New files can be created in this same directory following the same pattern.
+    CHANNEL FILES:
+        ABRTransmissions_Emergency.lua   - Emergency Broadcast System (91.6 MHz)
+        ABRTransmissions_Ghost.lua       - Ghost Radio (66.6 MHz)
+        ABRTransmissions_Apocalipse.lua  - Radio Apocalipse (104.2 MHz)
+        ABRTransmissions_Military.lua    - Military Communications (310 kHz)
+        ABRTransmissions_Numbers.lua     - Numbers Station (47.8 MHz)
+        ABRTransmissions_Alexandria.lua  - The Alexandria Library (108.0 MHz)
 
-    TO ADD NEW CHANNELS:
-        Call ABRRadio.registerChannel() with your channel config, then register
-        transmissions for it. Remember to add a sandbox option if you want
-        server admins to be able to toggle it.
+    TO ADD A NEW CHANNEL:
+        1. Register the channel below with ABRRadio.registerChannel()
+        2. Create a new ABRTransmissions_<Name>.lua file with its transmissions
+        3. Add a require line at the bottom of this file
+        4. Add a sandbox option in sandbox-options.txt and Sandbox.json translations
 
     STATIC SOUNDS:
         The game recognizes these special strings as radio static:
         "<bzzt>", "<fzzt>", "<wzzt>", "<szzt>"
-        Use them as literal lines (not translation keys) for atmosphere.
+        Use them as literal strings (not i18n tables) for atmosphere.
 ]]
 
 require "ApocalipseBRRadio/ABRRadioFramework"
@@ -29,10 +34,13 @@ require "ApocalipseBRRadio/ABRRadioFramework"
 -- ============================================================================
 
 -- Emergency Broadcast System - 91.6 MHz
--- Government warnings, evacuation notices, automated emergency loops
 ABRRadio.registerChannel({
     id              = "emergency_broadcast",
-    name            = getText("UI_ABR_CH_EmergencyBroadcast"),
+    name            = { EN = "Emergency Broadcast System", PTBR = "Sistema de Alerta de Emergencia" },
+    description     = {
+        EN = "Automated government emergency broadcasts. Evacuation orders, containment updates, and survival directives from what remains of Central Command.",
+        PTBR = "Transmissoes automatizadas de emergencia do governo. Ordens de evacuacao, atualizacoes de contencao e diretivas de sobrevivencia do que resta do Comando Central.",
+    },
     frequency       = 91600,
     category        = "Emergency",
     color           = { r = 1.0, g = 0.2, b = 0.2 },
@@ -43,10 +51,13 @@ ABRRadio.registerChannel({
 })
 
 -- Ghost Radio - 66.6 MHz
--- Creepypasta, eerie whispers, numbers, unexplained transmissions
 ABRRadio.registerChannel({
     id              = "ghost_radio",
-    name            = getText("UI_ABR_CH_GhostRadio"),
+    name            = { EN = "Ghost Radio", PTBR = "Radio Fantasma" },
+    description     = {
+        EN = "A frequency no one claims to operate. Unsettling whispers, cryptic warnings, and voices that seem to know things they shouldn't. Tune in at your own risk.",
+        PTBR = "Uma frequencia que ninguem afirma operar. Sussurros perturbadores, avisos enigmaticos e vozes que parecem saber coisas que nao deveriam. Sintonize por sua conta e risco.",
+    },
     frequency       = 66600,
     category        = "Other",
     color           = { r = 0.6, g = 0.0, b = 0.6 },
@@ -57,10 +68,13 @@ ABRRadio.registerChannel({
 })
 
 -- Radio Apocalipse - 104.2 MHz
--- Survivor broadcasts, community news, morale, distress calls
 ABRRadio.registerChannel({
     id              = "radio_apocalipse",
-    name            = getText("UI_ABR_CH_RadioApocalipse"),
+    name            = { EN = "Radio Apocalipse", PTBR = "Radio Apocalipse" },
+    description     = {
+        EN = "The voice of the survivors. Community news, horde warnings, supply drop locations, and words of hope from an undisclosed location somewhere in Knox County.",
+        PTBR = "A voz dos sobreviventes. Noticias da comunidade, alertas de hordas, locais de suprimentos e palavras de esperanca de um local secreto em algum lugar do Condado de Knox.",
+    },
     frequency       = 104200,
     category        = "Radio",
     color           = { r = 0.2, g = 0.8, b = 0.2 },
@@ -71,10 +85,13 @@ ABRRadio.registerChannel({
 })
 
 -- Military Communications - 310 kHz
--- Tactical comms, classified operations, coded messages
 ABRRadio.registerChannel({
     id              = "military_comms",
-    name            = getText("UI_ABR_CH_MilitaryComms"),
+    name            = { EN = "Military Communications", PTBR = "Comunicacoes Militares" },
+    description     = {
+        EN = "Intercepted military transmissions. Tactical operations, extraction requests, and classified communications from soldiers fighting a war they've already lost.",
+        PTBR = "Transmissoes militares interceptadas. Operacoes taticas, pedidos de extracao e comunicacoes classificadas de soldados lutando uma guerra que ja perderam.",
+    },
     frequency       = 310,
     category        = "Military",
     color           = { r = 0.4, g = 0.6, b = 0.2 },
@@ -85,10 +102,13 @@ ABRRadio.registerChannel({
 })
 
 -- Numbers Station - 47.8 MHz
--- Cryptic number sequences, encoded messages, eerie automation
 ABRRadio.registerChannel({
     id              = "numbers_station",
-    name            = getText("UI_ABR_CH_NumbersStation"),
+    name            = { EN = "Numbers Station", PTBR = "Estacao de Numeros" },
+    description     = {
+        EN = "An enigmatic automated broadcast of number sequences, NATO phonetic codes, and binary strings. Its purpose is unknown. Its origin is untraceable.",
+        PTBR = "Uma transmissao automatizada e enigmatica de sequencias numericas, codigos foneticos NATO e strings binarias. Seu proposito e desconhecido. Sua origem e irrastreavel.",
+    },
     frequency       = 47800,
     category        = "Other",
     color           = { r = 0.5, g = 0.5, b = 0.5 },
@@ -98,463 +118,36 @@ ABRRadio.registerChannel({
     sandboxOption   = "EnableNumbersStation",
 })
 
-
--- ============================================================================
--- EMERGENCY BROADCAST SYSTEM TRANSMISSIONS
--- ============================================================================
-
--- EBS_01: Standard evacuation warning
-ABRRadio.registerTransmission("emergency_broadcast", {
-    id = "ebs_01",
-    lines = {
-        "UI_ABR_EBS_01_L01",
-        "UI_ABR_EBS_01_L02",
-        "UI_ABR_EBS_01_L03",
-        "UI_ABR_EBS_01_L04",
-        "<bzzt>",
+-- The Alexandria Library - 1.0 MHz
+ABRRadio.registerChannel({
+    id              = "alexandria_library",
+    name            = { EN = "The Alexandria Library", PTBR = "A Biblioteca de Alexandria" },
+    description     = {
+        EN = "A solitary archivist who calls herself 'The Librarian' monitors every frequency and curates the airwaves. She records, catalogs, and re-broadcasts fragments of transmissions, weaving them with her own commentary. No one knows where she transmits from, or how she is still alive.",
+        PTBR = "Uma arquivista solitaria que se autodenomina 'A Bibliotecaria' monitora todas as frequencias e curadoria as ondas do radio. Ela grava, cataloga e retransmite fragmentos de transmissoes, entrelacando-os com seus proprios comentarios. Ninguem sabe de onde ela transmite, ou como ainda esta viva.",
     },
-    weight = 15,
-    minDay = 0,
+    frequency       = 1000,
+    category        = "Radio",
+    color           = { r = 0.8, g = 0.7, b = 0.3 },
+    intervalMin     = 10,
+    intervalMax     = 25,
+    signalStrength  = -1,
+    sandboxOption   = "EnableAlexandriaLibrary",
 })
 
--- EBS_02: Quarantine zone expansion
-ABRRadio.registerTransmission("emergency_broadcast", {
-    id = "ebs_02",
-    lines = {
-        "UI_ABR_EBS_02_L01",
-        "UI_ABR_EBS_02_L02",
-        "<fzzt>",
-        "UI_ABR_EBS_02_L03",
-        "<bzzt>",
-    },
-    weight = 12,
-    minDay = 0,
-})
-
--- EBS_03: Supply drop notice
-ABRRadio.registerTransmission("emergency_broadcast", {
-    id = "ebs_03",
-    lines = {
-        "UI_ABR_EBS_03_L01",
-        "UI_ABR_EBS_03_L02",
-        "UI_ABR_EBS_03_L03",
-        "<bzzt>",
-    },
-    weight = 10,
-    minDay = 0,
-    maxDay = 30,
-})
-
--- EBS_04: Automated loop (station abandoned)
-ABRRadio.registerTransmission("emergency_broadcast", {
-    id = "ebs_04",
-    lines = {
-        "<wzzt>",
-        "UI_ABR_EBS_04_L01",
-        "UI_ABR_EBS_04_L02",
-        "UI_ABR_EBS_04_L03",
-        "UI_ABR_EBS_04_L04",
-        "<bzzt>",
-    },
-    weight = 20,
-    minDay = 14,
-})
-
--- EBS_05: Desperate final message
-ABRRadio.registerTransmission("emergency_broadcast", {
-    id = "ebs_05",
-    lines = {
-        "<szzt>",
-        "UI_ABR_EBS_05_L01",
-        "UI_ABR_EBS_05_L02",
-        "UI_ABR_EBS_05_L03",
-        "UI_ABR_EBS_05_L04",
-        "UI_ABR_EBS_05_L05",
-        "<bzzt>",
-    },
-    weight = 15,
-    minDay = 21,
-})
-
--- EBS_06: Containment failure alert (triggers alarm event for listeners)
-ABRRadio.registerTransmission("emergency_broadcast", {
-    id = "ebs_06",
-    lines = {
-        "UI_ABR_EBS_06_L01",
-        "UI_ABR_EBS_06_L02",
-        "UI_ABR_EBS_06_L03",
-        "<fzzt>",
-        "UI_ABR_EBS_06_L04",
-        "<bzzt>",
-    },
-    weight = 10,
-    minDay = 7,
-    command = "ContainmentBreach",
-    commandArgs = { sector = "south" },
-})
+print("[ABRRadio] All channels registered.")
 
 
 -- ============================================================================
--- GHOST RADIO TRANSMISSIONS (CREEPYPASTA)
+-- LOAD TRANSMISSION FILES
 -- ============================================================================
 
--- GHO_01: Numbers whisper
-ABRRadio.registerTransmission("ghost_radio", {
-    id = "gho_01",
-    lines = {
-        "<wzzt>",
-        "UI_ABR_GHO_01_L01",
-        "<szzt>",
-        "UI_ABR_GHO_01_L02",
-        "UI_ABR_GHO_01_L03",
-        "<bzzt>",
-    },
-    weight = 10,
-    minDay = 0,
-})
-
--- GHO_02: Child's voice
-ABRRadio.registerTransmission("ghost_radio", {
-    id = "gho_02",
-    lines = {
-        "<fzzt>",
-        "UI_ABR_GHO_02_L01",
-        "UI_ABR_GHO_02_L02",
-        "UI_ABR_GHO_02_L03",
-        "<wzzt>",
-        "UI_ABR_GHO_02_L04",
-        "<szzt>",
-    },
-    weight = 12,
-    minDay = 3,
-})
-
--- GHO_03: Warning message
-ABRRadio.registerTransmission("ghost_radio", {
-    id = "gho_03",
-    lines = {
-        "<fzzt>",
-        "<wzzt>",
-        "UI_ABR_GHO_03_L01",
-        "UI_ABR_GHO_03_L02",
-        "UI_ABR_GHO_03_L03",
-        "<szzt>",
-        "UI_ABR_GHO_03_L04",
-        "<bzzt>",
-    },
-    weight = 8,
-    minDay = 7,
-})
-
--- GHO_04: The Watcher
-ABRRadio.registerTransmission("ghost_radio", {
-    id = "gho_04",
-    lines = {
-        "UI_ABR_GHO_04_L01",
-        "UI_ABR_GHO_04_L02",
-        "UI_ABR_GHO_04_L03",
-        "<szzt>",
-    },
-    color = { r = 0.8, g = 0.0, b = 0.0 },
-    weight = 15,
-    minDay = 10,
-})
-
--- GHO_05: Time loop
-ABRRadio.registerTransmission("ghost_radio", {
-    id = "gho_05",
-    lines = {
-        "UI_ABR_GHO_05_L01",
-        "UI_ABR_GHO_05_L02",
-        "UI_ABR_GHO_05_L03",
-        "<fzzt>",
-        "UI_ABR_GHO_05_L04",
-        "<bzzt>",
-    },
-    weight = 10,
-    minDay = 5,
-})
-
--- GHO_06: The Countdown
-ABRRadio.registerTransmission("ghost_radio", {
-    id = "gho_06",
-    lines = {
-        "UI_ABR_GHO_06_L01",
-        "<wzzt>",
-        "UI_ABR_GHO_06_L02",
-        "UI_ABR_GHO_06_L03",
-        "UI_ABR_GHO_06_L04",
-        "<szzt>",
-    },
-    weight = 10,
-    minDay = 14,
-})
-
--- GHO_07: The Invitation (triggers paranormal event for listeners)
-ABRRadio.registerTransmission("ghost_radio", {
-    id = "gho_07",
-    lines = {
-        "<wzzt>",
-        "UI_ABR_GHO_07_L01",
-        "UI_ABR_GHO_07_L02",
-        "UI_ABR_GHO_07_L03",
-        "UI_ABR_GHO_07_L04",
-        "<bzzt>",
-    },
-    color = { r = 0.7, g = 0.0, b = 0.3 },
-    weight = 12,
-    minDay = 21,
-    command = "ParanormalEvent",
-    commandArgs = { type = "invasion" },
-})
-
-
--- ============================================================================
--- RADIO APOCALIPSE TRANSMISSIONS (SURVIVOR BROADCASTS)
--- ============================================================================
-
--- APO_01: Station introduction
-ABRRadio.registerTransmission("radio_apocalipse", {
-    id = "apo_01",
-    lines = {
-        "UI_ABR_APO_01_L01",
-        "UI_ABR_APO_01_L02",
-        "UI_ABR_APO_01_L03",
-        "UI_ABR_APO_01_L04",
-    },
-    weight = 20,
-    minDay = 0,
-})
-
--- APO_02: Horde warning (triggers horde activity event for listeners)
-ABRRadio.registerTransmission("radio_apocalipse", {
-    id = "apo_02",
-    lines = {
-        "UI_ABR_APO_02_L01",
-        "UI_ABR_APO_02_L02",
-        "UI_ABR_APO_02_L03",
-        "<bzzt>",
-    },
-    color = { r = 1.0, g = 0.6, b = 0.0 },
-    weight = 12,
-    minDay = 3,
-    command = "HordeWarning",
-    commandArgs = { intensity = "medium", area = "west_point" },
-})
-
--- APO_03: Settlement update
-ABRRadio.registerTransmission("radio_apocalipse", {
-    id = "apo_03",
-    lines = {
-        "UI_ABR_APO_03_L01",
-        "UI_ABR_APO_03_L02",
-        "UI_ABR_APO_03_L03",
-    },
-    weight = 10,
-    minDay = 7,
-})
-
--- APO_04: Raider warning
-ABRRadio.registerTransmission("radio_apocalipse", {
-    id = "apo_04",
-    lines = {
-        "UI_ABR_APO_04_L01",
-        "UI_ABR_APO_04_L02",
-        "UI_ABR_APO_04_L03",
-        "<fzzt>",
-    },
-    color = { r = 1.0, g = 0.3, b = 0.0 },
-    weight = 10,
-    minDay = 10,
-})
-
--- APO_05: Morale message (night broadcast)
-ABRRadio.registerTransmission("radio_apocalipse", {
-    id = "apo_05",
-    lines = {
-        "UI_ABR_APO_05_L01",
-        "UI_ABR_APO_05_L02",
-        "UI_ABR_APO_05_L03",
-        "UI_ABR_APO_05_L04",
-    },
-    weight = 15,
-    minDay = 0,
-})
-
--- APO_06: Distress call
-ABRRadio.registerTransmission("radio_apocalipse", {
-    id = "apo_06",
-    lines = {
-        "<fzzt>",
-        "UI_ABR_APO_06_L01",
-        "UI_ABR_APO_06_L02",
-        "UI_ABR_APO_06_L03",
-        "UI_ABR_APO_06_L04",
-        "<bzzt>",
-    },
-    color = { r = 1.0, g = 0.0, b = 0.0 },
-    weight = 8,
-    minDay = 5,
-})
-
-
--- ============================================================================
--- MILITARY COMMUNICATIONS TRANSMISSIONS
--- ============================================================================
-
--- MIL_01: Failed extraction request
-ABRRadio.registerTransmission("military_comms", {
-    id = "mil_01",
-    lines = {
-        "UI_ABR_MIL_01_L01",
-        "UI_ABR_MIL_01_L02",
-        "UI_ABR_MIL_01_L03",
-        "<bzzt>",
-        "UI_ABR_MIL_01_L04",
-        "<szzt>",
-    },
-    weight = 12,
-    minDay = 0,
-})
-
--- MIL_02: Containment breach (triggers military response event)
-ABRRadio.registerTransmission("military_comms", {
-    id = "mil_02",
-    lines = {
-        "UI_ABR_MIL_02_L01",
-        "UI_ABR_MIL_02_L02",
-        "UI_ABR_MIL_02_L03",
-        "UI_ABR_MIL_02_L04",
-        "<bzzt>",
-    },
-    weight = 10,
-    minDay = 3,
-    command = "MilitaryResponse",
-    commandArgs = { action = "fallback", sector = 9 },
-})
-
--- MIL_03: Classified operation
-ABRRadio.registerTransmission("military_comms", {
-    id = "mil_03",
-    lines = {
-        "<fzzt>",
-        "UI_ABR_MIL_03_L01",
-        "UI_ABR_MIL_03_L02",
-        "UI_ABR_MIL_03_L03",
-        "UI_ABR_MIL_03_L04",
-        "<szzt>",
-    },
-    color = { r = 0.5, g = 0.5, b = 0.5 },
-    weight = 8,
-    minDay = 14,
-})
-
--- MIL_04: Lost patrol distress
-ABRRadio.registerTransmission("military_comms", {
-    id = "mil_04",
-    lines = {
-        "<wzzt>",
-        "UI_ABR_MIL_04_L01",
-        "UI_ABR_MIL_04_L02",
-        "UI_ABR_MIL_04_L03",
-        "UI_ABR_MIL_04_L04",
-        "<bzzt>",
-    },
-    weight = 12,
-    minDay = 7,
-})
-
--- MIL_05: Final military broadcast
-ABRRadio.registerTransmission("military_comms", {
-    id = "mil_05",
-    lines = {
-        "UI_ABR_MIL_05_L01",
-        "UI_ABR_MIL_05_L02",
-        "UI_ABR_MIL_05_L03",
-        "UI_ABR_MIL_05_L04",
-        "UI_ABR_MIL_05_L05",
-        "<bzzt>",
-    },
-    weight = 15,
-    minDay = 21,
-})
-
-
--- ============================================================================
--- NUMBERS STATION TRANSMISSIONS
--- ============================================================================
-
--- NUM_01: The Sequence (LOST reference)
-ABRRadio.registerTransmission("numbers_station", {
-    id = "num_01",
-    lines = {
-        "<wzzt>",
-        "UI_ABR_NUM_01_L01",
-        "<fzzt>",
-        "UI_ABR_NUM_01_L02",
-        "<szzt>",
-    },
-    weight = 15,
-    minDay = 0,
-})
-
--- NUM_02: NATO phonetic alphabet
-ABRRadio.registerTransmission("numbers_station", {
-    id = "num_02",
-    lines = {
-        "UI_ABR_NUM_02_L01",
-        "UI_ABR_NUM_02_L02",
-        "<wzzt>",
-        "UI_ABR_NUM_02_L03",
-        "<bzzt>",
-    },
-    weight = 10,
-    minDay = 0,
-})
-
--- NUM_03: Coordinates
-ABRRadio.registerTransmission("numbers_station", {
-    id = "num_03",
-    lines = {
-        "<fzzt>",
-        "UI_ABR_NUM_03_L01",
-        "<wzzt>",
-        "UI_ABR_NUM_03_L02",
-        "UI_ABR_NUM_03_L03",
-        "<szzt>",
-    },
-    weight = 12,
-    minDay = 7,
-})
-
--- NUM_04: Binary (spells "HELP" in ASCII)
-ABRRadio.registerTransmission("numbers_station", {
-    id = "num_04",
-    lines = {
-        "UI_ABR_NUM_04_L01",
-        "<fzzt>",
-        "UI_ABR_NUM_04_L02",
-        "<wzzt>",
-        "UI_ABR_NUM_04_L03",
-        "<szzt>",
-    },
-    weight = 8,
-    minDay = 14,
-})
-
--- NUM_05: Signal pattern
-ABRRadio.registerTransmission("numbers_station", {
-    id = "num_05",
-    lines = {
-        "<wzzt>",
-        "UI_ABR_NUM_05_L01",
-        "UI_ABR_NUM_05_L02",
-        "UI_ABR_NUM_05_L03",
-        "<szzt>",
-    },
-    weight = 10,
-    minDay = 0,
-})
+require "ApocalipseBRRadio/ABRTransmissions_Emergency"
+require "ApocalipseBRRadio/ABRTransmissions_Ghost"
+require "ApocalipseBRRadio/ABRTransmissions_Apocalipse"
+require "ApocalipseBRRadio/ABRTransmissions_Military"
+require "ApocalipseBRRadio/ABRTransmissions_Numbers"
+require "ApocalipseBRRadio/ABRTransmissions_Alexandria"
 
 
 -- ============================================================================
@@ -563,4 +156,5 @@ print("[ABRRadio] Registered " .. ABRRadio.getTransmissionCount("ghost_radio") .
 print("[ABRRadio] Registered " .. ABRRadio.getTransmissionCount("radio_apocalipse") .. " survivor transmissions.")
 print("[ABRRadio] Registered " .. ABRRadio.getTransmissionCount("military_comms") .. " military transmissions.")
 print("[ABRRadio] Registered " .. ABRRadio.getTransmissionCount("numbers_station") .. " numbers station transmissions.")
+print("[ABRRadio] Registered " .. ABRRadio.getTransmissionCount("alexandria_library") .. " Alexandria Library transmissions.")
 print("[ABRRadio] All transmissions loaded.")

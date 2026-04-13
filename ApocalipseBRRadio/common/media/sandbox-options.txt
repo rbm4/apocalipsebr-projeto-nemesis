@@ -1,5 +1,14 @@
 VERSION = 1,
 
+option ApocalipseBRRadio.Language
+{
+    type = enum,
+    numValues = 2,
+    default = 1,
+    page = ApocalipseBRRadio,
+    translation = ApocalipseBRRadio_Language,
+}
+
 option ApocalipseBRRadio.KeepRadioAlive
 {
     type = boolean,
@@ -56,4 +65,12 @@ option ApocalipseBRRadio.EnableNumbersStation
     default = true,
     page = ApocalipseBRRadio,
     translation = ApocalipseBRRadio_EnableNumbersStation,
+}
+
+option ApocalipseBRRadio.EnableAlexandriaLibrary
+{
+    type = boolean,
+    default = true,
+    page = ApocalipseBRRadio,
+    translation = ApocalipseBRRadio_EnableAlexandriaLibrary,
 }

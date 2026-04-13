@@ -1,5 +1,9 @@
 {
     "Sandbox_ApocalipseBRRadio": "APOCALIPSE [BR] - Radio",
+    "Sandbox_ApocalipseBRRadio_Language": "Broadcast Language",
+    "Sandbox_ApocalipseBRRadio_Language_tooltip": "Language used for radio broadcast text. All players hear the same language.",
+    "Sandbox_ApocalipseBRRadio_Language_option1": "English",
+    "Sandbox_ApocalipseBRRadio_Language_option2": "Portugues (Brasil)",
     "Sandbox_ApocalipseBRRadio_KeepRadioAlive": "Keep Radio Alive",
     "Sandbox_ApocalipseBRRadio_KeepRadioAlive_tooltip": "Prevents radio silence after vanilla transmissions end. Custom transmissions will continue broadcasting indefinitely.",
     "Sandbox_ApocalipseBRRadio_TransmissionInterval": "Transmission Interval (minutes)",
@@ -13,5 +17,7 @@
     "Sandbox_ApocalipseBRRadio_EnableMilitaryComms": "Enable Military Communications",
     "Sandbox_ApocalipseBRRadio_EnableMilitaryComms_tooltip": "Enable the Military Communications channel (310 kHz) with tactical and classified transmissions.",
     "Sandbox_ApocalipseBRRadio_EnableNumbersStation": "Enable Numbers Station",
-    "Sandbox_ApocalipseBRRadio_EnableNumbersStation_tooltip": "Enable the mysterious Numbers Station (47.8 MHz) with cryptic encoded broadcasts."
+    "Sandbox_ApocalipseBRRadio_EnableNumbersStation_tooltip": "Enable the mysterious Numbers Station (47.8 MHz) with cryptic encoded broadcasts.",
+    "Sandbox_ApocalipseBRRadio_EnableAlexandriaLibrary": "Enable The Alexandria Library",
+    "Sandbox_ApocalipseBRRadio_EnableAlexandriaLibrary_tooltip": "Enable The Alexandria Library channel (108.0 MHz). A mysterious Librarian monitors all frequencies and re-broadcasts her commentary on what she hears."
 }
