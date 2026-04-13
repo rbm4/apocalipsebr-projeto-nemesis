@@ -1,0 +1,17 @@
+{
+    "Sandbox_ApocalipseBRRadio": "APOCALIPSE [BR] - Rádio",
+    "Sandbox_ApocalipseBRRadio_KeepRadioAlive": "Manter Rádio Ativo",
+    "Sandbox_ApocalipseBRRadio_KeepRadioAlive_tooltip": "Impede o silêncio do rádio após o fim das transmissões originais. Transmissões personalizadas continuarão indefinidamente.",
+    "Sandbox_ApocalipseBRRadio_TransmissionInterval": "Intervalo de Transmissão (minutos)",
+    "Sandbox_ApocalipseBRRadio_TransmissionInterval_tooltip": "Média de minutos no jogo entre transmissões personalizadas. Menor = mais frequente. Padrão: 5.",
+    "Sandbox_ApocalipseBRRadio_EnableEmergencyBroadcast": "Ativar Transmissões de Emergência",
+    "Sandbox_ApocalipseBRRadio_EnableEmergencyBroadcast_tooltip": "Ativa o canal do Sistema de Alerta de Emergência (91.6 MHz) com avisos governamentais e ordens de evacuação.",
+    "Sandbox_ApocalipseBRRadio_EnableCreepyTransmissions": "Ativar Transmissões Sinistras",
+    "Sandbox_ApocalipseBRRadio_EnableCreepyTransmissions_tooltip": "Ativa o canal Rádio Fantasma (66.6 MHz) com transmissões assustadoras e perturbadoras no estilo creepypasta.",
+    "Sandbox_ApocalipseBRRadio_EnableRadioApocalipse": "Ativar Rádio Apocalipse",
+    "Sandbox_ApocalipseBRRadio_EnableRadioApocalipse_tooltip": "Ativa o canal principal Rádio Apocalipse (104.2 MHz) com transmissões de sobreviventes e notícias da comunidade.",
+    "Sandbox_ApocalipseBRRadio_EnableMilitaryComms": "Ativar Comunicações Militares",
+    "Sandbox_ApocalipseBRRadio_EnableMilitaryComms_tooltip": "Ativa o canal de Comunicações Militares (310 kHz) com transmissões táticas e classificadas.",
+    "Sandbox_ApocalipseBRRadio_EnableNumbersStation": "Ativar Estação de Números",
+    "Sandbox_ApocalipseBRRadio_EnableNumbersStation_tooltip": "Ativa a misteriosa Estação de Números (47.8 MHz) com transmissões criptografadas."
+}

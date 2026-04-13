@@ -68,7 +68,7 @@ All game assets go under `media/`. Subfolders by type:
 | `lua/client/` | Client-only Lua scripts | `.lua` |
 | `lua/server/` | Server-only Lua scripts | `.lua` |
 | `lua/shared/` | Shared (client+server) Lua scripts | `.lua` |
-| `lua/shared/Translate/<LANG>/` | Translation files | `.txt` or `.json` |
+| `lua/shared/Translate/<LANG>/` | Translation files | `.json` |
 | `scripts/` | Item, recipe, vehicle, evolvedrecipe definitions | `.txt` |
 | `sandbox-options.txt` | Sandbox/server settings (lives directly in `media/`) | `.txt` |
 | `clothing/` | Outfit manager (`clothing.xml`) and clothing items (`clothingItems/*.xml`) | `.xml` |
@@ -110,35 +110,33 @@ Key B42 changes from B41:
 
 ## Translation Files
 
-Two formats supported (`.txt` legacy and `.json` modern):
+All translation files use JSON format (`.json`) inside `media/lua/shared/Translate/<LANG>/`.
 
-### Legacy .txt format (media/lua/shared/Translate/EN/ItemName_EN.txt)
-```
-ItemName_<Module>.<ItemName> = "<Display Name>",
-```
-
-### JSON format (media/lua/shared/Translate/EN/ItemName.json)
+### Item name translation (ItemName.json)
 ```json
 {
     "ItemName_<Module>.<ItemName>": "<Display Name>"
 }
 ```
 
-### Sandbox translation (for sandbox-options.txt)
-```
-Sandbox_<ModId> = "Page Title",
-Sandbox_<ModId>_<OptionName> = "Option Label",
-Sandbox_<ModId>_<OptionName>_tooltip = "Tooltip description.",
-```
-File: `Sandbox_EN.txt` or `Sandbox.json` in the same Translate folder.
-
-### UI translation
-```
-UI_EN = {
-    UI_MyMod_SomeLabel = "Label text",
+### Sandbox translation (Sandbox.json)
+For sandbox-options.txt labels and tooltips:
+```json
+{
+    "Sandbox_<ModId>": "Page Title",
+    "Sandbox_<ModId>_<OptionName>": "Option Label",
+    "Sandbox_<ModId>_<OptionName>_tooltip": "Tooltip description."
 }
 ```
-File: `UI_EN.txt` or `UI.json`.
+
+### UI translation (UI.json)
+For in-game UI labels:
+```json
+{
+    "UI_MyMod_SomeLabel": "Label text",
+    "UI_MyMod_AnotherLabel": "Another text with %1 placeholder"
+}
+```
 
 ### Supported language folders
 EN, AR, CA, CH, CN, CS, DA, DE, ES, FI, FR, HU, ID, IT, JP, KO, NL, NO, PH, PL, PT, PTBR, RO, RU, TH, TR, UA, UK
@@ -345,8 +343,8 @@ When creating a new B42 mod from scratch:
 3. **Create media subfolders**: Only the ones needed for the mod's features
 4. **If Lua mod**: Create `media/lua/client/`, `media/lua/server/`, and/or `media/lua/shared/` as needed
 5. **If items/recipes**: Create `media/scripts/` with `.txt` definition files
-6. **If sandbox options**: Create `media/sandbox-options.txt` + translation entries in `Translate/<LANG>/Sandbox_<LANG>.txt`
-7. **If translations**: Create `media/lua/shared/Translate/EN/` with appropriate `.txt` or `.json` files
+6. **If sandbox options**: Create `media/sandbox-options.txt` + translation entries in `Translate/<LANG>/Sandbox.json`
+7. **If translations**: Create `media/lua/shared/Translate/EN/` with `.json` files (ItemName.json, Sandbox.json, UI.json as needed)
 8. **If clothing**: Create the full pipeline: `fileGuidTable.xml` → `clothing/clothing.xml` → `clothing/clothingItems/*.xml` → `scripts/*.txt` → models + textures
 9. **If pzstudio**: Add `project.json` and `package.json` at the project root
 10. **Generate GUIDs**: Use `[System.Guid]::NewGuid()` in PowerShell for any clothing item GUIDs

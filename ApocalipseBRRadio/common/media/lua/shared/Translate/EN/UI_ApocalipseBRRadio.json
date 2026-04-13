@@ -1,0 +1,141 @@
+{
+    "UI_ABR_CH_EmergencyBroadcast": "Emergency Broadcast System",
+    "UI_ABR_CH_GhostRadio": "Ghost Radio",
+    "UI_ABR_CH_RadioApocalipse": "Radio Apocalipse",
+    "UI_ABR_CH_MilitaryComms": "Military Communications",
+    "UI_ABR_CH_NumbersStation": "Numbers Station",
+
+    "UI_ABR_EBS_01_L01": "This is an automated Emergency Broadcast System transmission. This is not a test.",
+    "UI_ABR_EBS_01_L02": "All citizens in Knox County are ordered to evacuate immediately.",
+    "UI_ABR_EBS_01_L03": "Proceed to the nearest military checkpoint for processing and evacuation.",
+    "UI_ABR_EBS_01_L04": "Do not attempt to aid infected individuals. Repeat: do not approach the infected.",
+
+    "UI_ABR_EBS_02_L01": "Attention: the exclusion zone has been expanded to cover all of Knox County.",
+    "UI_ABR_EBS_02_L02": "Military forces have established a perimeter. Unauthorized exit will be met with lethal force.",
+    "UI_ABR_EBS_02_L03": "This message will repeat.",
+
+    "UI_ABR_EBS_03_L01": "Emergency supply drops have been scheduled for designated areas.",
+    "UI_ABR_EBS_03_L02": "Citizens are advised to approach supply zones only during daylight hours.",
+    "UI_ABR_EBS_03_L03": "Supplies are limited. Priority will be given to families with children and the elderly.",
+
+    "UI_ABR_EBS_04_L01": "...",
+    "UI_ABR_EBS_04_L02": "This station is no longer broadcasting live content.",
+    "UI_ABR_EBS_04_L03": "If you are hearing this, this is an automated emergency message.",
+    "UI_ABR_EBS_04_L04": "Stay indoors. Barricade all entry points. Do not open the door for anyone.",
+
+    "UI_ABR_EBS_05_L01": "To anyone still listening out there...",
+    "UI_ABR_EBS_05_L02": "The evacuation centers have been overrun. Louisville has... Louisville is gone.",
+    "UI_ABR_EBS_05_L03": "We are the last broadcast tower still operational in the region.",
+    "UI_ABR_EBS_05_L04": "If you can hear this, head north. There may still be survivors near the lake.",
+    "UI_ABR_EBS_05_L05": "May God have mercy on us all.",
+
+    "UI_ABR_EBS_06_L01": "ALERT: Containment has failed at multiple checkpoints along the southern perimeter.",
+    "UI_ABR_EBS_06_L02": "All personnel are to fall back to Rally Point Echo.",
+    "UI_ABR_EBS_06_L03": "Civilian evacuation is no longer possible. Shelter in place immediately.",
+    "UI_ABR_EBS_06_L04": "This is the last update from Central Command.",
+
+    "UI_ABR_GHO_01_L01": "Seven... seven... three... nine... two...",
+    "UI_ABR_GHO_01_L02": "Repeat: seven... seven... three... nine... two...",
+    "UI_ABR_GHO_01_L03": "... the door is open... the door is open...",
+
+    "UI_ABR_GHO_02_L01": "Can you hear me? ... Is someone there?",
+    "UI_ABR_GHO_02_L02": "Mommy said not to go outside. But mommy doesn't talk anymore.",
+    "UI_ABR_GHO_02_L03": "The man at the window... he's still there... he's always there...",
+    "UI_ABR_GHO_02_L04": "... come play with us...",
+
+    "UI_ABR_GHO_03_L01": "T-H-E-Y ... C-A-N ... H-E-A-R ... Y-O-U",
+    "UI_ABR_GHO_03_L02": "... seventeen days since last contact...",
+    "UI_ABR_GHO_03_L03": "DO NOT TUNE TO THIS FREQUENCY AGAIN",
+    "UI_ABR_GHO_03_L04": "... you were warned...",
+
+    "UI_ABR_GHO_04_L01": "I can see you.",
+    "UI_ABR_GHO_04_L02": "You checked the locks, didn't you? ... Good.",
+    "UI_ABR_GHO_04_L03": "But it won't matter. They're already inside.",
+
+    "UI_ABR_GHO_05_L01": "Day 1: Everything is fine.",
+    "UI_ABR_GHO_05_L02": "Day 1: Everything is fine.",
+    "UI_ABR_GHO_05_L03": "Day 1: Everything is fine.",
+    "UI_ABR_GHO_05_L04": "Day 1: Everything is... not fine.",
+
+    "UI_ABR_GHO_06_L01": "Fourteen... thirteen... twelve...",
+    "UI_ABR_GHO_06_L02": "... eight... seven... six...",
+    "UI_ABR_GHO_06_L03": "When the countdown reaches zero...",
+    "UI_ABR_GHO_06_L04": "... look behind you.",
+
+    "UI_ABR_GHO_07_L01": "We've been watching you for a long time.",
+    "UI_ABR_GHO_07_L02": "You're doing so well. So resourceful. So alone.",
+    "UI_ABR_GHO_07_L03": "Don't worry. You won't be alone for much longer.",
+    "UI_ABR_GHO_07_L04": "We're coming.",
+
+    "UI_ABR_APO_01_L01": "This is Radio Apocalipse, broadcasting from an undisclosed location.",
+    "UI_ABR_APO_01_L02": "To all survivors in the Knox County region: you are not alone.",
+    "UI_ABR_APO_01_L03": "We broadcast daily with survival tips, safe zone updates, and community news.",
+    "UI_ABR_APO_01_L04": "Stay strong. Stay human. Stay alive.",
+
+    "UI_ABR_APO_02_L01": "Attention survivors: significant horde activity spotted near the warehouse district.",
+    "UI_ABR_APO_02_L02": "Avoid West Point downtown area for the next 48 hours.",
+    "UI_ABR_APO_02_L03": "Supply runs should be redirected to rural areas east of Muldraugh.",
+
+    "UI_ABR_APO_03_L01": "Good news from the northern settlements.",
+    "UI_ABR_APO_03_L02": "A group of survivors has established a fortified position near the lake.",
+    "UI_ABR_APO_03_L03": "They are accepting new members. Look for the green signal fires at night.",
+
+    "UI_ABR_APO_04_L01": "WARNING: Armed groups have been spotted moving along the main highway.",
+    "UI_ABR_APO_04_L02": "They are hostile. Repeat: engage only if necessary.",
+    "UI_ABR_APO_04_L03": "Travel in groups and avoid main roads after dark.",
+
+    "UI_ABR_APO_05_L01": "To everyone listening tonight...",
+    "UI_ABR_APO_05_L02": "I know it's hard. I know you've lost people. We all have.",
+    "UI_ABR_APO_05_L03": "But every day you wake up is a victory against this nightmare.",
+    "UI_ABR_APO_05_L04": "This is Radio Apocalipse, reminding you: we survive together, or not at all.",
+
+    "UI_ABR_APO_06_L01": "Mayday, mayday! This is a distress call from a group of four survivors.",
+    "UI_ABR_APO_06_L02": "We are trapped on the second floor of the Crossroads Mall.",
+    "UI_ABR_APO_06_L03": "We have wounded and are running low on supplies.",
+    "UI_ABR_APO_06_L04": "If anyone can hear this, please... we need help.",
+
+    "UI_ABR_MIL_01_L01": "Alpha-Seven to Command. Requesting extraction at grid reference Delta-Four-Niner.",
+    "UI_ABR_MIL_01_L02": "Negative, Alpha-Seven. All extraction assets have been reassigned to Louisville.",
+    "UI_ABR_MIL_01_L03": "Command, we have civilian survivors. Requesting immediate support—",
+    "UI_ABR_MIL_01_L04": "... Alpha-Seven, do you copy? ... Alpha-Seven? ...",
+
+    "UI_ABR_MIL_02_L01": "Foxtrot-Actual to all units. Containment breach at Sector Nine.",
+    "UI_ABR_MIL_02_L02": "Recommend immediate fallback to secondary perimeter.",
+    "UI_ABR_MIL_02_L03": "Authorization code: BROKEN ARROW. Repeat: BROKEN ARROW.",
+    "UI_ABR_MIL_02_L04": "All personnel withdraw immediately. This is not a drill.",
+
+    "UI_ABR_MIL_03_L01": "Whiskey-Tango. Payload delivered at designated coordinates.",
+    "UI_ABR_MIL_03_L02": "Collateral damage assessment: total.",
+    "UI_ABR_MIL_03_L03": "This channel will go silent in T-minus three minutes.",
+    "UI_ABR_MIL_03_L04": "God forgive us for what we've done.",
+
+    "UI_ABR_MIL_04_L01": "This is Sergeant Morrison, 3rd Battalion, 24th Infantry.",
+    "UI_ABR_MIL_04_L02": "We are cut off from the main force. Down to four personnel.",
+    "UI_ABR_MIL_04_L03": "If anyone receives this... we are holding position at the school on Oak Street.",
+    "UI_ABR_MIL_04_L04": "Ammunition is critical. We will not last another night.",
+
+    "UI_ABR_MIL_05_L01": "To any military personnel still monitoring this frequency:",
+    "UI_ABR_MIL_05_L02": "Operation DEADLIGHT has been declared a total failure.",
+    "UI_ABR_MIL_05_L03": "The chain of command has been dissolved. You are hereby released from duty.",
+    "UI_ABR_MIL_05_L04": "Go home, soldier. Find your family, if you still can.",
+    "UI_ABR_MIL_05_L05": "This is the last official military broadcast. Central Command, signing off.",
+
+    "UI_ABR_NUM_01_L01": "... 4... 8... 15... 16... 23... 42...",
+    "UI_ABR_NUM_01_L02": "... 4... 8... 15... 16... 23... 42...",
+
+    "UI_ABR_NUM_02_L01": "Alpha... Tango... Echo... November... Delta...",
+    "UI_ABR_NUM_02_L02": "Sierra... India... X-ray...",
+    "UI_ABR_NUM_02_L03": "Repeat cycle. Alpha... Tango... Echo...",
+
+    "UI_ABR_NUM_03_L01": "North 36 point 14... West 86 point 79...",
+    "UI_ABR_NUM_03_L02": "North 36 point 14... West 86 point 79...",
+    "UI_ABR_NUM_03_L03": "You know where to go.",
+
+    "UI_ABR_NUM_04_L01": "01001000 01000101 01001100 01010000",
+    "UI_ABR_NUM_04_L02": "01001000 01000101 01001100 01010000",
+    "UI_ABR_NUM_04_L03": "... message repeats...",
+
+    "UI_ABR_NUM_05_L01": "... ... ...",
+    "UI_ABR_NUM_05_L02": "... end of cycle. Begin retransmission...",
+    "UI_ABR_NUM_05_L03": "... ... ..."
+}

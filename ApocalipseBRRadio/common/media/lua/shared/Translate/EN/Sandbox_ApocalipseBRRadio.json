@@ -1,0 +1,17 @@
+{
+    "Sandbox_ApocalipseBRRadio": "APOCALIPSE [BR] - Radio",
+    "Sandbox_ApocalipseBRRadio_KeepRadioAlive": "Keep Radio Alive",
+    "Sandbox_ApocalipseBRRadio_KeepRadioAlive_tooltip": "Prevents radio silence after vanilla transmissions end. Custom transmissions will continue broadcasting indefinitely.",
+    "Sandbox_ApocalipseBRRadio_TransmissionInterval": "Transmission Interval (minutes)",
+    "Sandbox_ApocalipseBRRadio_TransmissionInterval_tooltip": "Average game minutes between custom radio transmissions. Lower = more frequent broadcasts. Default: 5.",
+    "Sandbox_ApocalipseBRRadio_EnableEmergencyBroadcast": "Enable Emergency Broadcasts",
+    "Sandbox_ApocalipseBRRadio_EnableEmergencyBroadcast_tooltip": "Enable the Emergency Broadcast System channel (91.6 MHz) with government warnings and evacuation notices.",
+    "Sandbox_ApocalipseBRRadio_EnableCreepyTransmissions": "Enable Creepy Transmissions",
+    "Sandbox_ApocalipseBRRadio_EnableCreepyTransmissions_tooltip": "Enable the Ghost Radio channel (66.6 MHz) with eerie, unsettling, and creepypasta-style transmissions.",
+    "Sandbox_ApocalipseBRRadio_EnableRadioApocalipse": "Enable Radio Apocalipse",
+    "Sandbox_ApocalipseBRRadio_EnableRadioApocalipse_tooltip": "Enable the main Radio Apocalipse channel (104.2 MHz) with survivor broadcasts and community news.",
+    "Sandbox_ApocalipseBRRadio_EnableMilitaryComms": "Enable Military Communications",
+    "Sandbox_ApocalipseBRRadio_EnableMilitaryComms_tooltip": "Enable the Military Communications channel (310 kHz) with tactical and classified transmissions.",
+    "Sandbox_ApocalipseBRRadio_EnableNumbersStation": "Enable Numbers Station",
+    "Sandbox_ApocalipseBRRadio_EnableNumbersStation_tooltip": "Enable the mysterious Numbers Station (47.8 MHz) with cryptic encoded broadcasts."
+}

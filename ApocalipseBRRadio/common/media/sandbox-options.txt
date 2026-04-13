@@ -1,0 +1,59 @@
+VERSION = 1,
+
+option ApocalipseBRRadio.KeepRadioAlive
+{
+    type = boolean,
+    default = true,
+    page = ApocalipseBRRadio,
+    translation = ApocalipseBRRadio_KeepRadioAlive,
+}
+
+option ApocalipseBRRadio.TransmissionInterval
+{
+    type = integer,
+    min = 1,
+    max = 60,
+    default = 5,
+    page = ApocalipseBRRadio,
+    translation = ApocalipseBRRadio_TransmissionInterval,
+}
+
+option ApocalipseBRRadio.EnableEmergencyBroadcast
+{
+    type = boolean,
+    default = true,
+    page = ApocalipseBRRadio,
+    translation = ApocalipseBRRadio_EnableEmergencyBroadcast,
+}
+
+option ApocalipseBRRadio.EnableCreepyTransmissions
+{
+    type = boolean,
+    default = true,
+    page = ApocalipseBRRadio,
+    translation = ApocalipseBRRadio_EnableCreepyTransmissions,
+}
+
+option ApocalipseBRRadio.EnableRadioApocalipse
+{
+    type = boolean,
+    default = true,
+    page = ApocalipseBRRadio,
+    translation = ApocalipseBRRadio_EnableRadioApocalipse,
+}
+
+option ApocalipseBRRadio.EnableMilitaryComms
+{
+    type = boolean,
+    default = true,
+    page = ApocalipseBRRadio,
+    translation = ApocalipseBRRadio_EnableMilitaryComms,
+}
+
+option ApocalipseBRRadio.EnableNumbersStation
+{
+    type = boolean,
+    default = true,
+    page = ApocalipseBRRadio,
+    translation = ApocalipseBRRadio_EnableNumbersStation,
+}

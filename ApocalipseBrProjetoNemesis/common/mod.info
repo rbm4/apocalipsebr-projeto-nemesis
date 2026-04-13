@@ -1,7 +1,0 @@
-name=ApocalipseBR Projeto Nemesis
-id=ApocalipseBrProjetoNemesis
-description=Build 42 port by Hypothetic. Original B41 Nemesis and MrX assets by Nemeth. Admin summon: /createhorde2 -x 10600 -y 9800 -z 0 -count 1 -outfit Nemesis -health 4.5
-poster=poster.png
-author=Hypothetic
-versionMin=42.13.0
-require=ApocalipseBR_Regioes
