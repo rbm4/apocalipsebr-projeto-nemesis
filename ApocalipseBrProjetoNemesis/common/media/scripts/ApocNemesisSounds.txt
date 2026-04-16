@@ -9,7 +9,7 @@ module Base
 		{
 			file = media/sound/theme.ogg,
 			distanceMax = 120,
-			volume = 0.20f,
+			volume = 0.15,
 		}
 	}
 
@@ -22,7 +22,7 @@ module Base
 		{
 			file = media/sound/STARS.ogg,
 			distanceMax = 80,
-			volume = 0.80f,
+			volume = 0.70,
 		}
 	}
 
@@ -35,7 +35,7 @@ module Base
 		{
 			file = media/sound/grunting.ogg,
 			distanceMax = 40,
-			volume = 0.50f,
+			volume = 0.40,
 		}
 	}
 
@@ -48,7 +48,7 @@ module Base
 		{
 			file = media/sound/grunting-2.ogg,
 			distanceMax = 40,
-			volume = 0.50f,
+			volume = 0.40,
 		}
 	}
 
@@ -61,7 +61,7 @@ module Base
 		{
 			file = media/sound/roaring.ogg,
 			distanceMax = 80,
-			volume = 0.60f,
+			volume = 0.50,
 		}
 	}
 
@@ -74,7 +74,7 @@ module Base
 		{
 			file = media/sound/roaring-2.ogg,
 			distanceMax = 80,
-			volume = 0.60f,
+			volume = 0.50,
 		}
 	}
 
@@ -87,7 +87,7 @@ module Base
 		{
 			file = media/sound/RWOAR.ogg,
 			distanceMax = 100,
-			volume = 0.70f,
+			volume = 0.60,
 		}
 	}
 }

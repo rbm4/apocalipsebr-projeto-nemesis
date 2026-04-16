@@ -1,0 +1,113 @@
+[h1]ApocalipseBR Projeto Nemesis[/h1]
+[i]Build 42 — Multiplayer Compatible[/i]
+
+A Resident Evil–inspired boss zombie mod that brings the relentless Nemesis to Project Zomboid. He will find you.
+
+[hr][/hr]
+
+[h2]What Does This Mod Do?[/h2]
+
+This mod adds a [b]boss-tier zombie[/b] wearing the iconic Nemesis outfit that the server automatically spawns near players using an escalating [b]pressure system[/b]. The longer you survive without encountering him, the more inevitable his arrival becomes.
+
+Once spawned, Nemesis is not like any other zombie:
+[list]
+[*] [b]Sprinter[/b] — he runs. Always.
+[*] [b]Superhuman toughness[/b] — takes up to 10 hits to bring down (configurable).
+[*] [b]Hawk vision & pinpoint hearing[/b] — he detects you from far away.
+[*] [b]Long memory & navigation[/b] — he remembers where you are and pathfinds toward you.
+[*] [b]Active redirect[/b] — even if distracted, he re-targets the nearest player every few seconds.
+[*] [b]97% scratch & bullet defense[/b] — conventional weapons are mostly ineffective; plan accordingly.
+[*] [b]50 kill XP bonus[/b] — if you manage to take him down, you earn it.
+[/list]
+
+Also includes the [b]Mr. X outfit[/b] as a secondary visual variant. Mr. X is slightly less armored but still uses the same boss module stats.
+
+Players [b]cannot equip[/b] the Nemesis or Mr. X suits — the mod blocks wearing them from context menus, drag-and-drop, and as a safety net on clothing update events.
+
+[hr][/hr]
+
+[h2]Pressure Spawn System[/h2]
+
+The server runs a background pressure loop [b]every in-game minute[/b]:
+
+[olist]
+[*] Pressure increases by a configurable amount each minute (default: +3).
+[*] When pressure reaches the threshold (default: 30), a spawn roll is attempted.
+[*] The roll has a configurable success chance (default: 10%).
+[*] If the roll succeeds, Nemesis spawns 30–45 tiles away from a random eligible player.
+[*] On spawn [b]or[/b] failed roll, pressure resets to zero and the cycle begins again.
+[*] Only [b]one Nemesis[/b] can be active at a time — no new spawns while one is alive.
+[/olist]
+
+With default settings, expect roughly [b]10 minutes of calm[/b] before the first threshold hit, and then it's a dice roll each cycle. Tension builds because you know he's coming — just not exactly when.
+
+[hr][/hr]
+
+[h2]Sound Design[/h2]
+
+Nemesis has a full 3D positional audio system. All vanilla zombie sounds are [b]suppressed[/b] on Nemesis-outfit zombies and replaced with custom ones:
+
+[list]
+[*] [b]Theme music[/b] — a looping ambient track audible within 60 tiles. You'll hear him before you see him.
+[*] [b]"S.T.A.R.S." voice line[/b] — plays when Nemesis first detects you (40-tile range). Unmistakable warning.
+[*] [b]Roars[/b] — periodic roars (3 variants) on an 8-second cooldown with a 40% chance per cycle, audible up to 80–100 tiles away.
+[*] [b]Grunts[/b] — plays when Nemesis takes a hit (2 variants, 50% chance), audible within 40 tiles.
+[/list]
+
+All sound ranges, cooldowns, and chances are configurable through Sandbox Options. You can tune or mute any layer.
+
+[hr][/hr]
+
+[h2]Sandbox Options[/h2]
+
+Everything is tunable from the server sandbox settings page:
+
+[table]
+[tr][th]Option[/th][th]Default[/th][th]Description[/th][/tr]
+[tr][td]Pressure Per Minute[/td][td]3[/td][td]How fast spawn pressure builds[/td][/tr]
+[tr][td]Pressure Threshold[/td][td]30[/td][td]Pressure needed before a spawn roll[/td][/tr]
+[tr][td]Spawn Roll Percent[/td][td]10%[/td][td]Chance to spawn when threshold is reached[/td][/tr]
+[tr][td]Spawn Min/Max Distance[/td][td]30–45[/td][td]How far from the player Nemesis appears[/td][/tr]
+[tr][td]Boss Max Hits[/td][td]10[/td][td]Number of hits to kill Nemesis[/td][/tr]
+[tr][td]Detection Range[/td][td]80[/td][td]How far Nemesis detects players[/td][/tr]
+[tr][td]Theme Range[/td][td]60[/td][td]Audible range of the theme loop[/td][/tr]
+[tr][td]S.T.A.R.S. Range[/td][td]40[/td][td]Audible range of the detection voice line[/td][/tr]
+[tr][td]Roar Cooldown[/td][td]8s[/td][td]Minimum seconds between roars[/td][/tr]
+[tr][td]Roar / Grunt Chance[/td][td]40% / 50%[/td][td]Probability of each sound playing[/td][/tr]
+[tr][td]Redirect Seconds[/td][td]5s[/td][td]How often Nemesis re-targets the nearest player[/td][/tr]
+[tr][td]Boss Cooldown Cycles[/td][td]3[/td][td]Pressure cycles to skip after a Nemesis dies[/td][/tr]
+[tr][td]Cooldown Scale by Players[/td][td]Off[/td][td]Add extra cooldown cycles per online player[/td][/tr]
+[tr][td]Debug[/td][td]Off[/td][td]Print spawn/pressure logs to server console[/td][/tr]
+[/table]
+
+[hr][/hr]
+
+[h2]Admin Commands[/h2]
+
+Admins can manually summon a Nemesis or Mr. X at any coordinates:
+
+[code]
+/createhorde2 -x 10600 -y 9800 -z 0 -count 1 -outfit Nemesis -health 4.5
+/createhorde2 -x 10600 -y 9800 -z 0 -count 1 -outfit MrX -health 2.0
+[/code]
+
+[hr][/hr]
+
+[h2]What to Expect[/h2]
+
+[list]
+[*] A slow-burn tension loop that keeps you on edge throughout your session.
+[*] Audio cues that let you gauge distance and react — or panic.
+[*] A genuine threat that forces you to think about escape routes, weapon durability, and positioning.
+[*] Works on dedicated servers with multiple players — Nemesis picks a random target each spawn.
+[*] Fully configurable difficulty — dial him up for horror, or tone him down for a manageable challenge.
+[/list]
+
+[hr][/hr]
+
+[h2]Credits[/h2]
+
+[list]
+[*] [b]B42 port:[/b] Hypothetic
+[*] [b]Original B41 ResidentEvilNemesis mod & assets:[/b] Nemeth
+[/list]

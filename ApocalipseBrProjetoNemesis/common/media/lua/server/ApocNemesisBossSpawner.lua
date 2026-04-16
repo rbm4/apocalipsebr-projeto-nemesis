@@ -3,6 +3,7 @@ if not isServer() then
 end
 
 require "RegionManager_ZombieModules"
+local ZombieHelper = require "RegionManager_ZombieServerHelper"
 
 ApocNemesisBoss = ApocNemesisBoss or {}
 
@@ -10,6 +11,20 @@ local Config = {
 	ModDataKey = "ApocNemesisBossState",
 	_loaded = false,
 }
+
+--- Split a CSV string into a table of trimmed tokens.
+local function splitCSV(str, sep)
+	local result = {}
+	if not str or str == "" then return result end
+	sep = sep or ","
+	for token in string.gmatch(str, "([^" .. sep .. "]+)") do
+		local trimmed = token:match("^%s*(.-)%s*$")
+		if trimmed and trimmed ~= "" then
+			result[#result + 1] = trimmed
+		end
+	end
+	return result
+end
 
 local function loadConfig()
 	if Config._loaded then
@@ -19,16 +34,54 @@ local function loadConfig()
 	if not sv then
 		return
 	end
-	Config.OutfitName = sv.OutfitName or "Nemesis"
+
+	-- Parse outfit names and weights as parallel CSV lists
+	Config.OutfitNames = splitCSV(sv.OutfitName or "Nemesis")
+	if #Config.OutfitNames == 0 then
+		Config.OutfitNames = { "Nemesis" }
+	end
+
+	local rawWeights = splitCSV(sv.OutfitWeights or "100")
+	Config.OutfitWeights = {}
+	Config.OutfitWeightTotal = 0
+	for i, name in ipairs(Config.OutfitNames) do
+		local w = tonumber(rawWeights[i]) or 100
+		Config.OutfitWeights[i] = w
+		Config.OutfitWeightTotal = Config.OutfitWeightTotal + w
+	end
+
+	-- Build a fast lookup set for outfit names
+	Config.OutfitNameSet = {}
+	for _, name in ipairs(Config.OutfitNames) do
+		Config.OutfitNameSet[name] = true
+	end
+
 	Config.PressurePerMinute = sv.PressurePerMinute or 3
 	Config.PressureThreshold = sv.PressureThreshold or 30
 	Config.SpawnRollPercent = sv.SpawnRollPercent or 10
 	Config.SpawnMinDistance = sv.SpawnMinDistance or 30
 	Config.SpawnMaxDistance = sv.SpawnMaxDistance or 45
-	Config.SpawnAttempts = sv.SpawnAttempts or 24
 	Config.BossHealth = sv.BossHealth or 4.5
+	Config.BossMaxHits = sv.BossMaxHits or 10
 	Config.Debug = sv.Debug or false
 	Config._loaded = true
+end
+
+--- Pick a random outfit name using the weighted probabilities.
+---@return string
+local function pickRandomOutfit()
+	if #Config.OutfitNames == 1 then
+		return Config.OutfitNames[1]
+	end
+	local roll = ZombRand(Config.OutfitWeightTotal)
+	local cumulative = 0
+	for i, w in ipairs(Config.OutfitWeights) do
+		cumulative = cumulative + w
+		if roll < cumulative then
+			return Config.OutfitNames[i]
+		end
+	end
+	return Config.OutfitNames[1]
 end
 
 local function log(message)
@@ -104,15 +157,16 @@ local function scanLiveNemesis()
 	local hasNemesis = false
 	for index = 0, zombies:size() - 1 do
 		local zombie = zombies:get(index)
-		if zombie and not zombie:isDead() and zombie:getOutfitName() == Config.OutfitName then
+		local outfitName = zombie and not zombie:isDead() and zombie:getOutfitName()
+		if outfitName and Config.OutfitNameSet[outfitName] then
 			local zData = zombie:getModData()
 			if zData.ApocNemesisBoss then
 				hasNemesis = true
 				applyBossTuning(zombie)
 			else
-				-- Random zombie got the Nemesis outfit: redress it
+				-- Random zombie got a boss outfit: redress it
 				zombie:dressInRandomOutfit()
-				log("Stripped Nemesis outfit from non-boss zombie")
+				log("Stripped boss outfit from non-boss zombie")
 			end
 		end
 	end
@@ -120,94 +174,159 @@ local function scanLiveNemesis()
 	return hasNemesis
 end
 
-local function isSpawnSquareValid(square, requireOutside)
-	if not square then
+local function isConversionCandidate(zombie, playerX, playerY, minDistSq, maxDistSq)
+	if not zombie or zombie:isDead() then return false end
+
+	-- Skip crawlers, sitting/fake-dead zombies, and knocked-down zombies
+	if zombie:isCrawling() or zombie:isFakeDead() or zombie:isKnockedDown() then
 		return false
 	end
 
-	if square:HasStairs() or not square:isFree(false) then
+	-- Skip zombies currently engaged with a target (e.g. attacking a door)
+	if zombie:getTarget() then return false end
+
+	local zData = zombie:getModData()
+	if zData.ApocNemesisBoss then return false end
+
+	-- Skip zombies already belonging to a registered module
+	local outfitName = zombie:getOutfitName()
+	if outfitName and RegionManager.ZombieModules.getByOutfit(outfitName) then
 		return false
 	end
 
-	if requireOutside and not square:isOutside() then
-		return false
-	end
-
-	return true
+	local dx = zombie:getX() - playerX
+	local dy = zombie:getY() - playerY
+	local distSq = dx * dx + dy * dy
+	return distSq >= minDistSq and distSq <= maxDistSq
 end
 
-local function findSpawnSquare(player, requireOutside)
+local function findCandidateZombie(player)
 	local cell = getCell()
-	if not cell then
-		return nil
-	end
+	if not cell then return nil end
 
-	local originX = math.floor(player:getX())
-	local originY = math.floor(player:getY())
-	local originZ = player:getZ()
-	local angleMax = math.pi * 2
+	local zombies = cell:getZombieList()
+	if not zombies or zombies:size() == 0 then return nil end
 
-	for _ = 1, Config.SpawnAttempts do
-		local angle = ZombRand(0, 6284) / 1000
-		local distance = ZombRand(Config.SpawnMinDistance, Config.SpawnMaxDistance + 1)
-		local x = math.floor(originX + math.cos(angle) * distance)
-		local y = math.floor(originY + math.sin(angle) * distance)
-		local square = cell:getGridSquare(x, y, originZ)
-		if isSpawnSquareValid(square, requireOutside) then
-			return square
+	local playerX = player:getX()
+	local playerY = player:getY()
+	local minDistSq = Config.SpawnMinDistance * Config.SpawnMinDistance
+	local maxDistSq = Config.SpawnMaxDistance * Config.SpawnMaxDistance
+
+	local candidates = {}
+	for i = 0, zombies:size() - 1 do
+		local zombie = zombies:get(i)
+		if isConversionCandidate(zombie, playerX, playerY, minDistSq, maxDistSq) then
+			candidates[#candidates + 1] = zombie
 		end
 	end
 
-	log("No valid square found for " .. tostring(player:getUsername()))
-	return nil
+	if #candidates == 0 then
+		log("No candidate zombies within range of " .. tostring(player:getUsername()))
+		return nil
+	end
+	return candidates[ZombRand(#candidates) + 1]
 end
 
-local function spawnNearPlayer(player)
+-- ============================================================================
+-- Delayed NemesisConvert: after converting a zombie, broadcast a custom
+-- command to all clients so they can dress the zombie locally and apply
+-- module properties.  The generic ConfirmZombie pipeline cannot be used
+-- because dressInNamedOutfit on the server does not sync the outfit to
+-- clients, causing the outfit validation check to fail.
+-- ============================================================================
+local DelayedConverts = {
+	queue = {},   -- { [i] = { framesLeft=number, zombieRef=IsoZombie, decisions=table } }
+	count = 0,
+}
+
+local function processDelayedConverts()
+	if DelayedConverts.count == 0 then return end
+	for i = DelayedConverts.count, 1, -1 do
+		local entry = DelayedConverts.queue[i]
+		entry.framesLeft = entry.framesLeft - 1
+		if entry.framesLeft <= 0 then
+			local zombie = entry.zombieRef
+			if zombie and not zombie:isDead() then
+				local onlineID = zombie:getOnlineID()
+				if onlineID >= 0 then
+					local payload = ZombieHelper.BuildConfirmPayload(onlineID, entry.decisions)
+					-- Add the chosen outfit so the client can dress the zombie locally
+					payload.outfit = entry.outfitName
+					sendServerCommand("ApocNemesisBoss", "NemesisConvert", payload)
+					log("Sent NemesisConvert for onlineID=" .. tostring(onlineID) .. " outfit=" .. tostring(entry.outfitName))
+				end
+			end
+			-- Remove (swap with last)
+			DelayedConverts.queue[i] = DelayedConverts.queue[DelayedConverts.count]
+			DelayedConverts.queue[DelayedConverts.count] = nil
+			DelayedConverts.count = DelayedConverts.count - 1
+		end
+	end
+end
+
+Events.OnTick.Add(processDelayedConverts)
+
+local function convertToNemesis(zombie, player)
+	-- Pick a weighted random outfit from the configured list
+	local chosenOutfit = pickRandomOutfit()
+
+	-- Dress the zombie in the chosen outfit
+	zombie:dressInNamedOutfit(chosenOutfit)
+
+	-- Apply boss modData flags
+	applyBossTuning(zombie)
+
+	-- Pre-cache module decisions so the regioes framework confirms correctly.
+	-- When any client sends RequestZombieInfo the cache already contains the
+	-- correct module entry (_moduleId set, maxHits, etc.).
+	local x, y = math.floor(zombie:getX()), math.floor(zombie:getY())
+	local pid = ZombieHelper.GetPersistentID(zombie)
+	if pid then
+		local decisions = ZombieHelper.ResolveModuleOverrides(chosenOutfit, x, y)
+		if decisions then
+			local globalData = ModData.getOrCreate("Apocalipse_TSY_ZombieStates")
+			if not globalData.zombies then globalData.zombies = {} end
+			globalData.zombies[pid] = decisions
+			log("Pre-cached module decisions for converted Nemesis pid=" .. pid)
+
+			-- Schedule a delayed NemesisConvert broadcast so that clients
+			-- dress the zombie locally and apply the full module properties.
+			DelayedConverts.count = DelayedConverts.count + 1
+			DelayedConverts.queue[DelayedConverts.count] = {
+				framesLeft = 20,
+				zombieRef  = zombie,
+				decisions  = decisions,
+				outfitName = chosenOutfit,
+			}
+		end
+	end
+
+	-- Give network ownership to the targeted player so their client simulates the AI
+	zombie:setOwnerPlayer(player)
+
+	log("Converted zombie to " .. chosenOutfit .. " at (" .. x .. ", " .. y .. ")")
+	return true
+end
+
+local function convertNearPlayer(player)
 	local state = getState()
-	local square = findSpawnSquare(player, true)
-	if not square then
-		square = findSpawnSquare(player, false)
-	end
 
-	if not square then
+	local zombie = findCandidateZombie(player)
+	if not zombie then
 		return false
 	end
 
-	local spawned = addZombiesInOutfit(
-		square:getX(),
-		square:getY(),
-		square:getZ(),
-		1,
-		Config.OutfitName,
-		nil,
-		false,
-		false,
-		false,
-		false,
-		false,
-		false,
-		Config.BossHealth
-	)
-
-	if not spawned or spawned:size() == 0 then
-		log("Spawn call returned no zombies")
+	if not convertToNemesis(zombie, player) then
 		return false
-	end
-
-	for index = 0, spawned:size() - 1 do
-		local zombie = spawned:get(index)
-		applyBossTuning(zombie)
-		-- Give network ownership to the targeted player so their client simulates the AI
-		zombie:setOwnerPlayer(player)
 	end
 
 	state.bossActive = true
 	state.pressure = 0
 	state.lastTargetUsername = player:getUsername() or "unknown"
-	state.lastSpawnX = square:getX()
-	state.lastSpawnY = square:getY()
-	state.lastSpawnZ = square:getZ()
-	log("Spawned Nemesis near " .. state.lastTargetUsername)
+	state.lastSpawnX = math.floor(zombie:getX())
+	state.lastSpawnY = math.floor(zombie:getY())
+	state.lastSpawnZ = math.floor(zombie:getZ())
+	log("Nemesis active near " .. state.lastTargetUsername)
 	return true
 end
 
@@ -229,11 +348,12 @@ local function onEveryOneMinute()
 
 	if ZombRand(100) >= Config.SpawnRollPercent then
 		log("Threshold reached but roll failed")
+		state.pressure = 0
 		return
 	end
 
 	local player = players[ZombRand(#players) + 1]
-	spawnNearPlayer(player)
+	convertNearPlayer(player)
 end
 
 Events.EveryOneMinute.Add(onEveryOneMinute)
@@ -249,11 +369,11 @@ local function registerNemesisModule()
 
 	RegionManager.ZombieModules.register({
 		id = "nemesis",
-		outfitNames = { Config.OutfitName or "Nemesis", "MrX" },
+		outfitNames = Config.OutfitNames,
 		stats = {
 			isSprinter      = true,
 			isTough         = true,
-			maxHits         = 10,
+			maxHits         = Config.BossMaxHits or 10,
 			bossHealth      = Config.BossHealth or 4.5,
 			isSuperhuman    = true,
 			hawkVision      = true,
@@ -284,6 +404,9 @@ local function registerNemesisModule()
 			redirectToPlayer      = true,
 			redirectCooldownTicks = 300,
 			detectionRange        = 80,
+			smashObstacles        = true,
+			smashCooldownTicks    = 60,
+			smashDamage           = 40,
 		},
 	})
 end

@@ -1,7 +1,9 @@
 {
     "Sandbox_ApocalipseBrProjetoNemesis": "Nemesis Boss",
     "Sandbox_ApocalipseBrProjetoNemesis_OutfitName": "Nome da Roupa do Boss",
-    "Sandbox_ApocalipseBrProjetoNemesis_OutfitName_tooltip": "Nome da roupa usada ao spawnar o zumbi boss. Deve corresponder a uma roupa registrada (ex: Nemesis, MrX).",
+    "Sandbox_ApocalipseBrProjetoNemesis_OutfitName_tooltip": "Lista de nomes de roupas separados por vírgula usados ao spawnar o zumbi boss. Cada um deve corresponder a uma roupa registrada (ex: Nemesis,MrX).",
+    "Sandbox_ApocalipseBrProjetoNemesis_OutfitWeights": "Pesos de Spawn das Roupas",
+    "Sandbox_ApocalipseBrProjetoNemesis_OutfitWeights_tooltip": "Porcentagens separadas por vírgula controlando a chance de cada roupa ser escolhida. Deve seguir a ordem da lista de roupas (ex: 50,50). Valores ausentes são preenchidos com 0.",
     "Sandbox_ApocalipseBrProjetoNemesis_PressurePerMinute": "Pressão Por Minuto",
     "Sandbox_ApocalipseBrProjetoNemesis_PressurePerMinute_tooltip": "Quanta pressão de spawn acumula a cada minuto do jogo enquanto nenhum boss está ativo. Valores maiores fazem o boss aparecer mais cedo. Padrão: 3.",
     "Sandbox_ApocalipseBrProjetoNemesis_PressureThreshold": "Limite de Pressão",
@@ -14,8 +16,8 @@
     "Sandbox_ApocalipseBrProjetoNemesis_SpawnMaxDistance_tooltip": "Distância máxima em tiles do jogador alvo onde o boss pode spawnar. Padrão: 45.",
     "Sandbox_ApocalipseBrProjetoNemesis_SpawnAttempts": "Tentativas de Local de Spawn",
     "Sandbox_ApocalipseBrProjetoNemesis_SpawnAttempts_tooltip": "Número de locais aleatórios testados para encontrar um quadrado válido de spawn. Aumente se o boss não conseguir spawnar em áreas densas. Padrão: 24.",
-    "Sandbox_ApocalipseBrProjetoNemesis_BossHealth": "Vida do Boss",
-    "Sandbox_ApocalipseBrProjetoNemesis_BossHealth_tooltip": "Valor de vida aplicado ao zumbi boss. Zumbis normais têm 1.0. Valores maiores tornam o boss mais difícil de matar. Padrão: 4.5.",
+    "Sandbox_ApocalipseBrProjetoNemesis_BossMaxHits": "Golpes Antes de Dano",
+    "Sandbox_ApocalipseBrProjetoNemesis_BossMaxHits_tooltip": "Número de golpes que o boss absorve antes de receber dano real. Valores maiores tornam o boss mais difícil de matar. Padrão: 10.",
     "Sandbox_ApocalipseBrProjetoNemesis_Debug": "Log de Debug",
     "Sandbox_ApocalipseBrProjetoNemesis_Debug_tooltip": "Ativar mensagens de debug no console do servidor. Útil para investigar o comportamento de spawn. Padrão: desativado.",
     "Sandbox_ApocalipseBrProjetoNemesis_DetectionRange": "Alcance de Detecção",
@@ -31,5 +33,11 @@
     "Sandbox_ApocalipseBrProjetoNemesis_GruntChance": "Chance de Grunhido ao Ser Atingido (%)",
     "Sandbox_ApocalipseBrProjetoNemesis_GruntChance_tooltip": "Chance percentual de o Nemesis grunhir ao ser atingido por uma arma. 0 desativa grunhidos. Padrão: 50.",
     "Sandbox_ApocalipseBrProjetoNemesis_RedirectSeconds": "Intervalo de Redirecionamento (segundos)",
-    "Sandbox_ApocalipseBrProjetoNemesis_RedirectSeconds_tooltip": "Frequência em segundos com que o cliente proprietário reemite o comando de pathfind para direcionar o Nemesis ao jogador mais próximo. Valores menores tornam o rastreamento mais agressivo. Padrão: 5."
+    "Sandbox_ApocalipseBrProjetoNemesis_RedirectSeconds_tooltip": "Frequência em segundos com que o cliente proprietário reemite o comando de pathfind para direcionar o Nemesis ao jogador mais próximo. Valores menores tornam o rastreamento mais agressivo. Padrão: 5.",
+    "Sandbox_ApocalipseBrProjetoNemesis_BossCooldownCycles": "Ciclos de Proteção do Boss",
+    "Sandbox_ApocalipseBrProjetoNemesis_BossCooldownCycles_tooltip": "Após o boss spawnar perto de um jogador, esse jogador fica protegido de ser alvo novamente por essa quantidade de ciclos de spawn. 0 desativa a proteção. Padrão: 3.",
+    "Sandbox_ApocalipseBrProjetoNemesis_CooldownScaleByPlayers": "Escalar Proteção por Jogadores Online",
+    "Sandbox_ApocalipseBrProjetoNemesis_CooldownScaleByPlayers_tooltip": "Quando ativado, a duração da proteção aumenta com base no número de jogadores online. Os ciclos extras são calculados como (jogadores online × Proteção Por Jogador). Padrão: desativado.",
+    "Sandbox_ApocalipseBrProjetoNemesis_CooldownPerPlayer": "Proteção Por Jogador",
+    "Sandbox_ApocalipseBrProjetoNemesis_CooldownPerPlayer_tooltip": "Ciclos extras de proteção adicionados por jogador online quando o escalonamento está ativado. Por exemplo, com 4 jogadores online e este valor em 1, a proteção aumenta em 4 ciclos. Padrão: 1."
 }

@@ -15,8 +15,27 @@ if isServer() then
 end
 
 require "RegionManager_ZombieModules"
+require "RegionManager_ZombieShared"
+require "RegionManager_ZombieModuleClient"
+require "RegionManager_Config"
+
+local sandboxOptions = getSandboxOptions()
 
 local configLoaded = false
+
+--- Split a string by a separator and return a table of trimmed tokens.
+local function splitCSV(str, sep)
+	local result = {}
+	if not str or str == "" then return result end
+	sep = sep or ","
+	for token in string.gmatch(str, "([^" .. sep .. "]+)") do
+		local trimmed = token:match("^%s*(.-)%s*$")
+		if trimmed and trimmed ~= "" then
+			result[#result + 1] = trimmed
+		end
+	end
+	return result
+end
 
 local function registerNemesisClientModule()
 	if configLoaded then return end
@@ -42,9 +61,14 @@ local function registerNemesisClientModule()
 		redirectCooldown   = (sv.RedirectSeconds or 5) * 60
 	end
 
+	local outfitNames = splitCSV(sv and sv.OutfitName or "Nemesis")
+	if #outfitNames == 0 then
+		outfitNames = { "Nemesis" }
+	end
+
 	RegionManager.ZombieModules.register({
 		id = "nemesis",
-		outfitNames = { sv and sv.OutfitName or "Nemesis", "MrX" },
+		outfitNames = outfitNames,
 		stats = {}, -- stats are applied server-side; this is for client lookup only
 		sounds = {
 			suppressVanilla = true,
@@ -68,6 +92,9 @@ local function registerNemesisClientModule()
 			redirectToPlayer      = true,
 			redirectCooldownTicks = redirectCooldown,
 			detectionRange        = detectionRange,
+			smashObstacles        = true,
+			smashCooldownTicks    = 60,
+			smashDamage           = 40,
 		},
 	})
 
@@ -75,3 +102,202 @@ local function registerNemesisClientModule()
 end
 
 Events.OnGameBoot.Add(registerNemesisClientModule)
+
+-- ============================================================================
+-- NemesisConvert handler: receives the custom command from the server when a
+-- zombie is converted to Nemesis.  Dresses the zombie in the outfit locally
+-- (since server-side dressInNamedOutfit doesn't sync to clients), then applies
+-- all module properties exactly like the ConfirmZombie pipeline would.
+-- ============================================================================
+
+--- Decode the compact bit-encoded payload (same as RegionManager_ZombieClient).
+local function decodeConfirmPayload(args)
+	local r = args.r
+	local bits    = tonumber(string.sub(r, 1, 9))   or 0
+	local xSign   = tonumber(string.sub(r, 10, 10)) or 1
+	local xAbs    = tonumber(string.sub(r, 11, 15)) or 0
+	local ySign   = tonumber(string.sub(r, 16, 16)) or 1
+	local yAbs    = tonumber(string.sub(r, 17, 21)) or 0
+	local maxHits = tonumber(string.sub(r, 22, 23)) or RegionManager.Shared.DEFAULT_MAX_HITS
+
+	local x = xSign == 1 and xAbs or -xAbs
+	local y = ySign == 1 and yAbs or -yAbs
+
+	local function hasBit(pos)
+		return math.floor(bits / (2 ^ pos)) % 2 == 1
+	end
+
+	return {
+		zombieID           = args.z,
+		isSprinter         = hasBit(0),
+		isShambler         = hasBit(1),
+		hawkVision         = hasBit(2),
+		badVision          = hasBit(3),
+		normalVision       = hasBit(4),
+		poorVision         = hasBit(5),
+		randomVision       = hasBit(6),
+		goodHearing        = hasBit(7),
+		badHearing         = hasBit(8),
+		pinpointHearing    = hasBit(9),
+		normalHearing      = hasBit(10),
+		poorHearing        = hasBit(11),
+		randomHearing      = hasBit(12),
+		isResistant        = hasBit(13),
+		isTough            = hasBit(14),
+		isNormalToughness  = hasBit(15),
+		isFragile          = hasBit(16),
+		isRandomToughness  = hasBit(17),
+		isSuperhuman       = hasBit(18),
+		isNormalToughness2 = hasBit(19),
+		isWeak             = hasBit(20),
+		isRandomToughness2 = hasBit(21),
+		hasNavigation      = hasBit(22),
+		hasMemoryLong      = hasBit(23),
+		hasMemoryNormal    = hasBit(24),
+		hasMemoryShort     = hasBit(25),
+		hasMemoryNone      = hasBit(26),
+		hasMemoryRandom    = hasBit(27),
+		x       = x,
+		y       = y,
+		maxHits = maxHits,
+	}
+end
+
+local function onNemesisConvertCommand(module, command, args)
+	if module ~= "ApocNemesisBoss" or command ~= "NemesisConvert" then
+		return
+	end
+
+	local player = getPlayer()
+	if not player then return end
+
+	local cell = player:getCell()
+	if not cell then return end
+
+	local data = decodeConfirmPayload(args)
+	local zombieID = data.zombieID
+	local outfitName = args.outfit
+
+	local zombieList = cell:getZombieList()
+	if not zombieList then return end
+
+	for i = 0, zombieList:size() - 1 do
+		local zombie = zombieList:get(i)
+		if zombie and not zombie:isDead() and zombie:getOnlineID() == zombieID then
+			-- Pass module ID into data for kill bonus
+			data.moduleId = args.m or "nemesis"
+
+			-- Apply all server-determined properties (speed, toughness, vision, etc.)
+			-- This MUST run FIRST because makeInactive(true/false) inside it
+			-- resets the zombie's outfit and model to random defaults.
+			RegionManager.Shared.ServerSideProperties(zombie, data, sandboxOptions)
+
+			-- Re-fetch modData after ServerSideProperties (the makeInactive cycle
+			-- inside it invalidates earlier references).
+			local modData = zombie:getModData()
+
+			-- Dress the zombie AFTER the makeInactive cycle so the outfit
+			-- survives. resetModel forces the 3D mesh to rebuild.
+			if outfitName then
+				zombie:dressInNamedOutfit(outfitName)
+				zombie:resetModel()
+			end
+
+			-- Cache the raw payload for speed revalidation
+			modData.Apocalipse_TSY_CachedPayload = args.r
+			modData.Apocalipse_TSY_CachedMaxHits = data.maxHits
+			modData.Apocalipse_TSY_IsModuleZombie = true
+			modData.Apocalipse_TSY_ForceModuleId = "nemesis"
+
+			-- Re-apply toughness on the fresh modData reference.
+			-- ServerSideProperties wrote these but makeInactive may have
+			-- invalidated the modData table it used.
+			if data.isTough then
+				local maxHits = data.maxHits or RegionManager.Shared.DEFAULT_MAX_HITS
+				modData.Apocalipse_TSY_ToughnessType = "tough"
+				modData.Apocalipse_TSY_ToughnessHitCounter = 0
+				modData.Apocalipse_TSY_ToughnessMaxHits = maxHits
+			end
+
+			-- Initialize client-side module tracking (sounds, redirect, etc.)
+			RegionManager.ZombieModuleClient.initZombie(zombie, "nemesis")
+
+			-- Apply bossHealth override from the module definition
+			local moduleDef = RegionManager.ZombieModules.getById("nemesis")
+			if moduleDef and moduleDef.stats and moduleDef.stats.bossHealth then
+				if zombie:getHealth() < moduleDef.stats.bossHealth then
+					zombie:setHealth(moduleDef.stats.bossHealth)
+				end
+			end
+
+			print("[ApocNemesisBoss] Client: converted zombie " .. tostring(zombieID) ..
+				  " to Nemesis (outfit=" .. tostring(outfitName) ..
+				  ", getOutfitName=" .. tostring(zombie:getOutfitName()) ..
+				  ", tough=" .. tostring(modData.Apocalipse_TSY_ToughnessType) ..
+				  ", maxHits=" .. tostring(modData.Apocalipse_TSY_ToughnessMaxHits) .. ")")
+			break
+		end
+	end
+end
+
+Events.OnServerCommand.Add(onNemesisConvertCommand)
+
+-- ============================================================================
+-- Prevent players from equipping Nemesis / MrX boss suits.
+-- The items still drop from zombie corpses and can be looted, but players
+-- cannot wear them.  Three interception layers guarantee no bypass path:
+--   1. Context-menu: "Wear" option is never shown.
+--   2. Timed-action: ISWearClothing:isValid() rejects the item (drag-drop).
+--   3. OnClothingUpdated: force-strip if somehow equipped anyway.
+-- ============================================================================
+
+local BLOCKED_FULLTYPES = {
+	["ApocNemesisBoss.NemesisSuit"] = true,
+	["ApocNemesisBoss.MrXSuit"]    = true,
+}
+
+local function isBossClothing(item)
+	return item and BLOCKED_FULLTYPES[item:getFullType()] == true
+end
+
+-- Layer 1: Remove "Wear" option from inventory right-click menu ---------------
+require "ISUI/ISInventoryPaneContextMenu"
+
+local _origDoWearClothingMenu = ISInventoryPaneContextMenu.doWearClothingMenu
+
+function ISInventoryPaneContextMenu.doWearClothingMenu(player, clothing, items, context)
+	if isBossClothing(clothing) then
+		return
+	end
+	return _origDoWearClothingMenu(player, clothing, items, context)
+end
+
+-- Layer 2: Block the timed wear action (catches drag-and-drop) ----------------
+require "TimedActions/ISWearClothing"
+
+local _origIsValid = ISWearClothing.isValid
+
+function ISWearClothing:isValid()
+	if isBossClothing(self.item) then
+		return false
+	end
+	return _origIsValid(self)
+end
+
+-- Layer 3: Safety net – force-strip on clothing update event ------------------
+local function onClothingUpdated(character)
+	-- if not character or not instanceof(character, "IsoPlayer") then
+	-- 	return
+	-- end
+	-- local wornItems = character:getWornItems()
+	-- if not wornItems then return end
+	-- for i = wornItems:size() - 1, 0, -1 do
+	-- 	local wornItem = wornItems:getItemByIndex(i)
+	-- 	if wornItem and isBossClothing(wornItem) then
+	-- 		local bodyLocation = wornItems:getItem(i)
+	-- 		character:setWornItem(bodyLocation:getLocation(), nil)
+	-- 	end
+	-- end
+end
+
+Events.OnClothingUpdated.Add(onClothingUpdated)
