@@ -270,8 +270,12 @@ local function convertToNemesis(zombie, player)
 	-- Pick a weighted random outfit from the configured list
 	local chosenOutfit = pickRandomOutfit()
 
-	-- Dress the zombie in the chosen outfit
-	zombie:dressInNamedOutfit(chosenOutfit)
+	-- Dress the zombie in the chosen outfit using dressInPersistentOutfit
+	-- (not dressInNamedOutfit) so that persistentOutfitId is set on the server.
+	-- ZombiePacket carries this ID every sync tick, meaning late-joining clients
+	-- or clients that chunk-reload will create the zombie with the correct outfit
+	-- natively through the engine's createRealZombieAlways pipeline.
+	zombie:dressInPersistentOutfit(chosenOutfit)
 
 	-- Apply boss modData flags
 	applyBossTuning(zombie)
@@ -293,7 +297,7 @@ local function convertToNemesis(zombie, player)
 			-- dress the zombie locally and apply the full module properties.
 			DelayedConverts.count = DelayedConverts.count + 1
 			DelayedConverts.queue[DelayedConverts.count] = {
-				framesLeft = 20,
+				framesLeft = 180,  -- ~3 seconds: give clients time to fully initialize the zombie
 				zombieRef  = zombie,
 				decisions  = decisions,
 				outfitName = chosenOutfit,
@@ -384,7 +388,7 @@ local function registerNemesisModule()
 		},
 		sounds = {
 			suppressVanilla = true,
-			theme    = { name = "ApocNemesis_Theme", range = 60, loop = true },
+			theme    = { name = "ApocNemesis_Theme", range = 40, loop = true },
 			onDetect = { name = "ApocNemesis_STARS", range = 40 },
 			periodic = {
 				{
@@ -406,7 +410,7 @@ local function registerNemesisModule()
 			detectionRange        = 80,
 			smashObstacles        = true,
 			smashCooldownTicks    = 60,
-			smashDamage           = 40,
+			smashDamage           = 400,
 		},
 	})
 end

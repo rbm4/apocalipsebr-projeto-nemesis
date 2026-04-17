@@ -219,16 +219,19 @@ local function onNemesisConvertCommand(module, command, args)
 				modData.Apocalipse_TSY_ToughnessMaxHits = maxHits
 			end
 
-			-- Initialize client-side module tracking (sounds, redirect, etc.)
-			RegionManager.ZombieModuleClient.initZombie(zombie, "nemesis")
+			-- Build convergence opts so the framework self-heals on every tick
+			local maxHits = data.maxHits or RegionManager.Shared.DEFAULT_MAX_HITS
 
-			-- Apply bossHealth override from the module definition
-			local moduleDef = RegionManager.ZombieModules.getById("nemesis")
-			if moduleDef and moduleDef.stats and moduleDef.stats.bossHealth then
-				if zombie:getHealth() < moduleDef.stats.bossHealth then
-					zombie:setHealth(moduleDef.stats.bossHealth)
-				end
-			end
+			local initOpts = {
+				expectedOutfit = outfitName,
+				expectedToughness = {
+					type    = "tough",
+					maxHits = maxHits,
+				},
+			}
+
+			-- Initialize client-side module tracking (sounds, redirect, convergence)
+			RegionManager.ZombieModuleClient.initZombie(zombie, "nemesis", initOpts)
 
 			print("[ApocNemesisBoss] Client: converted zombie " .. tostring(zombieID) ..
 				  " to Nemesis (outfit=" .. tostring(outfitName) ..
