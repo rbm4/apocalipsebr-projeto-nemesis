@@ -343,7 +343,7 @@ end
 
 
 -- Register event hooks
-Events.EveryTenMinutes.Add(onEveryOneMinute)
+Events.EveryOneMinute.Add(onEveryOneMinute)
 Events.OnLoadRadioScripts.Add(onLoadRadioScripts)
 
 

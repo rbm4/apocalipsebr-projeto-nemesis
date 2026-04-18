@@ -58,6 +58,9 @@ ABRRadio.DEFAULT_LANG = "EN"
 -- Channel registry: channelId -> channel config
 ABRRadio.channels = {}
 
+-- Ordered list of channel IDs (insertion order)
+ABRRadio.channelOrder = {}
+
 -- Reverse lookup: frequency (number) -> channelId (string)
 ABRRadio.frequencyToChannel = {}
 
@@ -142,6 +145,9 @@ function ABRRadio.registerChannel(config)
     if not ABRRadio.transmissions[config.id] then
         ABRRadio.transmissions[config.id] = {}
     end
+
+    -- Track insertion order
+    table.insert(ABRRadio.channelOrder, config.id)
 
     -- Register reverse frequency lookup
     ABRRadio.frequencyToChannel[ABRRadio.channels[config.id].frequency] = config.id
@@ -341,14 +347,10 @@ function ABRRadio.isChannelEnabled(channelId)
 end
 
 
---- Get all registered channel IDs.
+--- Get all registered channel IDs in registration order.
 --- @return table Array of channel ID strings
 function ABRRadio.getChannelIds()
-    local ids = {}
-    for id, _ in pairs(ABRRadio.channels) do
-        table.insert(ids, id)
-    end
-    return ids
+    return ABRRadio.channelOrder
 end
 
 

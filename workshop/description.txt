@@ -1,1 +1,71 @@
-ApocalipseBR Radio
+[h1]APOCALIPSE [BR] - Radio Framework[/h1]
+Brings the dead airwaves back to life. Six unique radio channels with immersive, lore-rich transmissions — emergency alerts, survivor stories, military chatter, paranormal whispers, cryptic numbers, and a mysterious archivist who monitors them all.
+
+Supports English and Brazilian Portuguese. Fully configurable via sandbox options. Other modders can use this framework to add their own channels.
+
+[hr][/hr]
+
+[h1]Channels[/h1]
+[list]
+[*] [b]Emergency Broadcast System (91.6 MHz)[/b] — Evacuation orders and survival directives from what remains of Central Command.
+[*] [b]Ghost Radio (66.6 MHz)[/b] — Unsettling whispers and cryptic warnings from a frequency no one claims to operate.
+[*] [b]Radio Apocalipse (104.2 MHz)[/b] — The voice of the survivors. Horde warnings, supply drops, and words of hope.
+[*] [b]Military Communications (310 kHz)[/b] — Intercepted tactical operations from soldiers fighting a war they've already lost.
+[*] [b]Numbers Station (47.8 MHz)[/b] — Enigmatic number sequences. Its purpose is unknown. Its origin is untraceable.
+[*] [b]The Alexandria Library (1.0 MHz)[/b] — A solitary archivist monitors every frequency. No one knows where she transmits from.
+[/list]
+
+[hr][/hr]
+
+[h1]Sandbox Options[/h1]
+Found under [b]ApocalipseBRRadio[/b] in Sandbox Settings:
+[list]
+[*] [b]Language[/b] — English or Portugues BR
+[*] [b]Keep Radio Alive[/b] — prevents radios from going silent after vanilla broadcasts end
+[*] [b]Transmission Interval[/b] — minutes between broadcasts (1-60)
+[*] [b]Toggle each channel[/b] — enable/disable any channel individually
+[/list]
+
+[hr][/hr]
+
+[h1]For Modders[/h1]
+Add your own channels from your mod — no need to edit this mod's files.
+
+[b]1.[/b] Add [code]require=apocalipsebrradio[/code] to your mod.info
+[b]2.[/b] Create a Lua file under media/lua/shared/ and require the framework:
+[code]require "ApocalipseBRRadio/ABRRadioFramework"[/code]
+
+[b]3.[/b] Register a channel and add transmissions:
+[code]
+ABRRadio.registerChannel({
+    id = "my_channel",
+    name = { EN = "My Channel", PTBR = "Meu Canal" },
+    frequency = 95000,
+    category = "Radio",
+    color = { r = 0.0, g = 0.8, b = 1.0 },
+})
+
+ABRRadio.registerTransmission("my_channel", {
+    id = "my_tx_01",
+    lines = {
+        "<bzzt>",
+        { EN = "Hello survivors!", PTBR = "Ola sobreviventes!" },
+        "<fzzt>",
+    },
+    weight = 10,
+})
+[/code]
+
+Full API docs and examples in the source code comments.
+
+[hr][/hr]
+
+[h1]Compatibility[/h1]
+[list]
+[*] Requires Project Zomboid Build 42+
+[*] Multiplayer and singleplayer
+[*] Safe to add to existing saves
+[/list]
+
+[hr][/hr]
+Created by [b]Hypothetic[/b] — [url=https://apocalipse.cloud]apocalipse.cloud[/url]

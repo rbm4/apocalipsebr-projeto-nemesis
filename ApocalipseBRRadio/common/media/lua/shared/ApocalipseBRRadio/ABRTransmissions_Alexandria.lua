@@ -29,7 +29,7 @@ ABRRadio.registerTransmission("alexandria_library", {
         { EN = "And so, I remember. For all of you.",
           PTBR = "E entao, eu lembro. Por todos voces." },
     },
-    weight = 20,
+    weight = 8,
     minDay = 0,
 })
 
@@ -46,6 +46,97 @@ ABRRadio.registerTransmission("alexandria_library", {
     weight = 15,
     minDay = 3,
 })
+
+
+-- ============================================================================
+-- CHANNEL CATALOG — dynamically generated from registered channel descriptions
+-- The Librarian introduces each frequency she monitors.
+-- ============================================================================
+
+do
+    -- Split text into sentences at ". " boundaries.
+    -- Modders can write multi-sentence descriptions; each sentence becomes
+    -- its own radio line separated by "...." pauses for readability.
+    local function splitSentences(text)
+        local sentences = {}
+        local remaining = text
+        while true do
+            local pos = remaining:find("%. ")
+            if not pos then
+                local trimmed = remaining:match("^%s*(.-)%s*$")
+                if trimmed and trimmed ~= "" then
+                    table.insert(sentences, trimmed)
+                end
+                break
+            end
+            local sentence = remaining:sub(1, pos)
+            local trimmed = sentence:match("^%s*(.-)%s*$")
+            if trimmed and trimmed ~= "" then
+                table.insert(sentences, trimmed)
+            end
+            remaining = remaining:sub(pos + 2)
+        end
+        return sentences
+    end
+
+    local catalogIndex = 0
+    for _, channelId in ipairs(ABRRadio.getChannelIds()) do
+        if channelId ~= "alexandria_library" then
+            local channel = ABRRadio.getChannel(channelId)
+            if channel and channel.description then
+                catalogIndex = catalogIndex + 1
+
+                local freqDisplay
+                if channel.frequency >= 1000 then
+                    freqDisplay = string.format("%.1f MHz", channel.frequency / 1000)
+                else
+                    freqDisplay = string.format("%d kHz", channel.frequency)
+                end
+
+                local nameEN = type(channel.name) == "table" and channel.name.EN or tostring(channel.name)
+                local namePTBR = type(channel.name) == "table" and (channel.name.PTBR or channel.name.EN) or tostring(channel.name)
+                local descEN = type(channel.description) == "table" and channel.description.EN or tostring(channel.description)
+                local descPTBR = type(channel.description) == "table" and (channel.description.PTBR or channel.description.EN) or tostring(channel.description)
+
+                local enParts = splitSentences(descEN)
+                local ptbrParts = splitSentences(descPTBR)
+                local maxParts = math.max(#enParts, #ptbrParts)
+
+                local lines = {
+                    "<fzzt>",
+                    { EN = "Catalog entry " .. string.format("%03d", catalogIndex) .. ". Frequency: " .. freqDisplay .. ".",
+                      PTBR = "Entrada do catalogo " .. string.format("%03d", catalogIndex) .. ". Frequencia: " .. freqDisplay .. "." },
+                    { EN = "They call it '" .. nameEN .. ".'",
+                      PTBR = "Eles chamam de '" .. namePTBR .. ".'" },
+                }
+
+                for si = 1, maxParts do
+                    local en = enParts[si] or ""
+                    local ptbr = ptbrParts[si] or ""
+                    if en ~= "" or ptbr ~= "" then
+                        table.insert(lines, { EN = en, PTBR = ptbr })
+                        if si < maxParts then
+                            table.insert(lines, "....")
+                        end
+                    end
+                end
+
+                table.insert(lines, { EN = "Archived. Indexed. The Library remembers.",
+                                      PTBR = "Arquivado. Indexado. A Biblioteca lembra." })
+                table.insert(lines, "<bzzt>")
+
+                ABRRadio.registerTransmission("alexandria_library", {
+                    id    = "alx_catalog_" .. channelId,
+                    lines = lines,
+                    color = channel.color,
+                    weight = 8,
+                    minDay = 0,
+                })
+            end
+        end
+    end
+    print("[ABRRadio] Alexandria Library: generated " .. catalogIndex .. " channel catalog entries.")
+end
 
 
 -- ============================================================================
@@ -301,6 +392,5 @@ ABRRadio.registerTransmission("alexandria_library", {
           PTBR = "Bem-vindo a Biblioteca de Alexandria. Deixe-me contar o que eu ouvi." },
     },
     weight = 18,
-    minDay = 0,
-    maxDay = 10
+    minDay = 0
 })

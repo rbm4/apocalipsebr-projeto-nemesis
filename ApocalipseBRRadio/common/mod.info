@@ -4,4 +4,4 @@ description=Custom radio framework for Project Zomboid B42. Adds custom radio ch
 poster=poster.png
 url=https://apocalipse.cloud
 author=Hypothetic
-versionMin=42
+versionMin=42.0.0
