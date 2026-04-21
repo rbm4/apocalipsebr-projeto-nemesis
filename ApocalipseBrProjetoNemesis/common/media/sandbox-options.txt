@@ -49,9 +49,9 @@ option ApocalipseBrProjetoNemesis.SpawnRollPercent
 option ApocalipseBrProjetoNemesis.SpawnMinDistance
 {
     type = integer,
-    min = 5,
-    max = 50,
-    default = 30,
+    min = 10,
+    max = 25,
+    default = 25,
     page = ApocalipseBrProjetoNemesis,
     translation = ApocalipseBrProjetoNemesis_SpawnMinDistance,
 }
@@ -59,8 +59,8 @@ option ApocalipseBrProjetoNemesis.SpawnMinDistance
 option ApocalipseBrProjetoNemesis.SpawnMaxDistance
 {
     type = integer,
-    min = 10,
-    max = 100,
+    min = 35,
+    max = 50,
     default = 45,
     page = ApocalipseBrProjetoNemesis,
     translation = ApocalipseBrProjetoNemesis_SpawnMaxDistance,

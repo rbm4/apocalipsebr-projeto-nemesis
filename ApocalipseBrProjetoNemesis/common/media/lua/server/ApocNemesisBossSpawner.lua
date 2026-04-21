@@ -4,6 +4,7 @@ end
 
 require "RegionManager_ZombieModules"
 local ZombieHelper = require "RegionManager_ZombieServerHelper"
+local moduleID = "nemesis"
 
 ApocNemesisBoss = ApocNemesisBoss or {}
 
@@ -250,8 +251,10 @@ local function processDelayedConverts()
 				local onlineID = zombie:getOnlineID()
 				if onlineID >= 0 then
 					local payload = ZombieHelper.BuildConfirmPayload(onlineID, entry.decisions)
-					-- Add the chosen outfit so the client can dress the zombie locally
+					-- Add the chosen outfit and assigned PID so the client can dress
+					-- the zombie locally and stamp the stable PID in modData.
 					payload.outfit = entry.outfitName
+					payload.pid = entry.assignedPID
 					sendServerCommand("ApocNemesisBoss", "NemesisConvert", payload)
 					log("Sent NemesisConvert for onlineID=" .. tostring(onlineID) .. " outfit=" .. tostring(entry.outfitName))
 				end
@@ -270,11 +273,16 @@ local function convertToNemesis(zombie, player)
 	-- Pick a weighted random outfit from the configured list
 	local chosenOutfit = pickRandomOutfit()
 
+	-- Capture the OLD persistentID before re-dressing. dressInPersistentOutfit
+	-- assigns a new persistentOutfitID, so the old entry becomes orphaned.
+	local oldPid = ZombieHelper.GetPersistentID(zombie)
+
 	-- Dress the zombie in the chosen outfit using dressInPersistentOutfit
 	-- (not dressInNamedOutfit) so that persistentOutfitId is set on the server.
 	-- ZombiePacket carries this ID every sync tick, meaning late-joining clients
 	-- or clients that chunk-reload will create the zombie with the correct outfit
 	-- natively through the engine's createRealZombieAlways pipeline.
+	zombie:dressInNamedOutfit(chosenOutfit)
 	zombie:dressInPersistentOutfit(chosenOutfit)
 
 	-- Apply boss modData flags
@@ -286,12 +294,26 @@ local function convertToNemesis(zombie, player)
 	local x, y = math.floor(zombie:getX()), math.floor(zombie:getY())
 	local pid = ZombieHelper.GetPersistentID(zombie)
 	if pid then
-		local decisions = ZombieHelper.ResolveModuleOverrides(chosenOutfit, x, y)
+		local decisions = ZombieHelper.ResolveModuleOverrides(moduleID, x, y)
 		if decisions then
 			local globalData = ModData.getOrCreate("Apocalipse_TSY_ZombieStates")
 			if not globalData.zombies then globalData.zombies = {} end
+
+			-- Remove the OLD pid entry left over from the pre-conversion outfit.
+			-- Without this, the cleanup loop would never match the old PID to any
+			-- live zombie (since its PID changed), leaving a ghost entry forever.
+			if oldPid and oldPid ~= pid then
+				globalData.zombies[oldPid] = nil
+				log("Removed stale pre-conversion pid=" .. oldPid)
+			end
+
 			globalData.zombies[pid] = decisions
 			log("Pre-cached module decisions for converted Nemesis pid=" .. pid)
+
+			-- Stamp the assigned PID into zombie modData so it survives outfit
+			-- changes. Clients will read this instead of computing from
+			-- getPersistentOutfitID() (which changes after dressInPersistentOutfit).
+			zombie:getModData().Apocalipse_TSY_AssignedPID = pid
 
 			-- Schedule a delayed NemesisConvert broadcast so that clients
 			-- dress the zombie locally and apply the full module properties.
@@ -301,6 +323,7 @@ local function convertToNemesis(zombie, player)
 				zombieRef  = zombie,
 				decisions  = decisions,
 				outfitName = chosenOutfit,
+				assignedPID = pid,
 			}
 		end
 	end
@@ -337,7 +360,7 @@ end
 local function onEveryOneMinute()
 	loadConfig()
 	local state = getState()
-	state.bossActive = scanLiveNemesis()
+	-- state.bossActive = scanLiveNemesis()
 
 	local players = collectEligiblePlayers()
 	if #players == 0 then
@@ -372,24 +395,25 @@ local function registerNemesisModule()
 	loadConfig()
 
 	RegionManager.ZombieModules.register({
-		id = "nemesis",
+		id = moduleID,
 		outfitNames = Config.OutfitNames,
 		stats = {
 			isSprinter      = true,
 			isTough         = true,
 			maxHits         = Config.BossMaxHits or 10,
-			bossHealth      = Config.BossHealth or 4.5,
+			bossHealth      = Config.BossHealth or 4.1,
 			isSuperhuman    = true,
 			hawkVision      = true,
 			pinpointHearing = true,
 			hasNavigation   = true,
 			hasMemoryLong   = true,
+			isResistant		= true,
 			killBonus       = 50,
 		},
 		sounds = {
 			suppressVanilla = true,
 			theme    = { name = "ApocNemesis_Theme", range = 40, loop = true },
-			onDetect = { name = "ApocNemesis_STARS", range = 40 },
+			onDetect = { name = "ApocNemesis_STARS", range = 60 },
 			periodic = {
 				{
 					names = { "ApocNemesis_Roar1", "ApocNemesis_Roar2", "ApocNemesis_RWOAR" },
@@ -399,8 +423,8 @@ local function registerNemesisModule()
 			},
 			onHit = {
 				{
-					names = { "ApocNemesis_Grunt1", "ApocNemesis_Grunt2" },
-					chance = 50,
+					names = { "ApocNemesis_Grunt1", "ApocNemesis_Grunt2", "ApocNemesis_STARS" },
+					chance = 30,
 				},
 			},
 		},

@@ -209,6 +209,13 @@ local function onNemesisConvertCommand(module, command, args)
 			modData.Apocalipse_TSY_IsModuleZombie = true
 			modData.Apocalipse_TSY_ForceModuleId = "nemesis"
 
+			-- Stamp the server-assigned PID so GetReliablePID returns a stable
+			-- value that matches globalData.zombies on the server, regardless
+			-- of any getPersistentOutfitID() drift from ZombiePacket sync.
+			if args.pid then
+				modData.Apocalipse_TSY_AssignedPID = args.pid
+			end
+
 			-- Re-apply toughness on the fresh modData reference.
 			-- ServerSideProperties wrote these but makeInactive may have
 			-- invalidated the modData table it used.

@@ -1,0 +1,29 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "npm run build — apocalipse-br-regioes",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": ["run", "build"],
+            "cwd": "C:\\Users\\ricar\\OneDrive\\Documents\\Github\\apocalipse-br-regioes",
+            "console": "integratedTerminal",
+            "skipFiles": ["<node_internals>/**"]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "npm run build — apocalipsebr-projeto-nemesis",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": ["run", "build"],
+            "cwd": "C:\\Users\\ricar\\OneDrive\\Documents\\Github\\apocalipsebr-projeto-nemesis",
+            "console": "integratedTerminal",
+            "skipFiles": ["<node_internals>/**"]
+        }
+    ]
+}
