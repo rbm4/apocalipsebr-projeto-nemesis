@@ -311,3 +311,90 @@ local function onClothingUpdated(character)
 end
 
 Events.OnClothingUpdated.Add(onClothingUpdated)
+-- ============================================================================
+-- Failsafe: scrub leaked Nemesis toughness from non-Nemesis zombies.
+--
+-- A small number of normal zombies have been reported getting stuck in the
+-- toughness damage-immunity state (ToughnessType="tough" + avoidDamage=true)
+-- despite not wearing a Nemesis/MrX outfit nor being tagged as the nemesis
+-- module.  Suspected leak paths:
+--   * onlineID drift / late-join NemesisConvert replay stamping the wrong
+--     local zombie with the Nemesis toughness bits.
+--   * Per-tick module convergence (RegionManager_ZombieModuleClient) keeping
+--     a stale entry keyed by a reused reliable PID and re-applying "tough".
+--   * Optimistic client-side setAvoidDamage(true) in the regioes OnHit handler
+--     outliving the tough state when the authoritative ApplyToughZombieHit
+--     broadcast fails to locate the target (moved out of cell, PID mismatch).
+--
+-- This guard runs on every player OnWeaponHitCharacter AFTER the regioes
+-- toughness handler.  If the target has Nemesis-signature toughness modData
+-- (ToughnessType=="tough" AND ToughnessMaxHits == BossMaxHits) but is NOT
+-- actually a Nemesis (outfit doesn't match AND ForceModuleId ~= "nemesis"),
+-- we scrub the tough flags and release avoidDamage so the hit lands.
+--
+-- It deliberately does NOT touch toughness whose maxHits differs from the
+-- Nemesis BossMaxHits, so generic region-zombie toughness (the regioes
+-- extra-hits system) remains untouched.
+-- ============================================================================
+
+local function isNemesisOutfit(outfit)
+	if not outfit then return false end
+	local sv = SandboxVars.ApocalipseBrProjetoNemesis
+	local names = splitCSV(sv and sv.OutfitName or "Nemesis")
+	if #names == 0 then
+		names = { "Nemesis" }
+	end
+	for _, n in ipairs(names) do
+		if outfit == n then return true end
+	end
+	return false
+end
+
+local function scrubLeakedNemesisToughness(zombie)
+	if not zombie or zombie:isDead() then return false end
+
+	local modData = zombie:getModData()
+	if modData.Apocalipse_TSY_ToughnessType ~= "tough" then
+		return false
+	end
+
+	-- Only act on toughness matching the Nemesis signature (BossMaxHits).
+	-- Leave generic region toughness alone.
+	local sv = SandboxVars.ApocalipseBrProjetoNemesis
+	local bossMaxHits = (sv and sv.BossMaxHits) or 10
+	local zMaxHits = tonumber(modData.Apocalipse_TSY_ToughnessMaxHits) or -1
+	if zMaxHits ~= bossMaxHits then
+		return false
+	end
+
+	-- Legit Nemesis: let the regioes toughness + convergence pipeline own it.
+	if modData.Apocalipse_TSY_ForceModuleId == "nemesis" then
+		return false
+	end
+	if isNemesisOutfit(zombie:getOutfitName()) then
+		return false
+	end
+
+	-- Leak confirmed: wipe Nemesis toughness state and release damage immunity.
+	modData.Apocalipse_TSY_ToughnessType        = nil
+	modData.Apocalipse_TSY_ToughnessHitCounter  = nil
+	modData.Apocalipse_TSY_ToughnessMaxHits     = nil
+	modData.Apocalipse_TSY_IsModuleZombie       = nil
+	modData.Apocalipse_TSY_ForceModuleId        = nil
+	modData.Apocalipse_TSY_CachedMaxHits        = nil
+	zombie:setAvoidDamage(false)
+
+	print("[ApocNemesisBoss] Failsafe: scrubbed leaked Nemesis toughness from " ..
+		  "zombie onlineID=" .. tostring(zombie:getOnlineID()) ..
+		  " outfit=" .. tostring(zombie:getOutfitName()))
+	return true
+end
+
+local function onHitNemesisToughnessFailsafe(attacker, target, weapon, damage)
+	local player = getPlayer()
+	if not player or attacker ~= player then return end
+	if not instanceof(target, "IsoZombie") then return end
+	scrubLeakedNemesisToughness(target)
+end
+
+Events.OnWeaponHitCharacter.Add(onHitNemesisToughnessFailsafe)

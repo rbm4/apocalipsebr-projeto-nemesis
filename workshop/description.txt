@@ -9,7 +9,7 @@ A Resident Evil–inspired boss zombie mod that brings the relentless Nemesis to
 
 This mod adds a [b]boss-tier zombie[/b] wearing the iconic Nemesis outfit that the server automatically spawns near players using an escalating [b]pressure system[/b]. The longer you survive without encountering him, the more inevitable his arrival becomes.
 
-Once spawned, Nemesis is not like any other zombie:
+It works by converting a zombie inside a range to the infamous Nemesis, and he's not like any other zombie:
 [list]
 [*] [b]Sprinter[/b] - he runs. Always.
 [*] [b]Superhuman toughness[/b] - takes up to 10 hits to bring down (configurable).
@@ -36,7 +36,7 @@ The server runs a background pressure loop [b]every in-game minute[/b]:
 [*] The roll has a configurable success chance (default: 10%).
 [*] If the roll succeeds, Nemesis spawns 30–45 tiles away from a random eligible player.
 [*] On spawn [b]or[/b] failed roll, pressure resets to zero and the cycle begins again.
-[*] Only [b]one Nemesis[/b] can be active at a time - no new spawns while one is alive.
+[*] There is no limit on how much Nemesis can be active at a time - too frequent spawn chances in the sandbox and you may be getting swarmed by Nemesis.
 [/olist]
 
 With default settings, expect roughly [b]10 minutes of calm[/b] before the first threshold hit, and then it's a dice roll each cycle. Tension builds because you know he's coming - just not exactly when.
@@ -84,7 +84,7 @@ Everything is tunable from the server sandbox settings page:
 
 [h2]Admin Commands[/h2]
 
-Admins can manually summon a Nemesis or Mr. X at any coordinates:
+Admins can manually summon a Nemesis or Mr. X at any coordinates (though this fails sometimes and i couldn't figure out why):
 
 [code]
 /createhorde2 -x 10600 -y 9800 -z 0 -count 1 -outfit Nemesis -health 4.5
@@ -101,6 +101,18 @@ Admins can manually summon a Nemesis or Mr. X at any coordinates:
 [*] A genuine threat that forces you to think about escape routes, weapon durability, and positioning.
 [*] Works on dedicated servers with multiple players - Nemesis picks a random target each spawn.
 [*] Fully configurable difficulty - dial him up for horror, or tone him down for a manageable challenge.
+[*] A genuine pure rush of adrenaline, specially when it comes unexpected.
+[/list]
+
+[hr][/hr]
+
+[h2]Known Issues[/h2]
+
+[list]
+[*] In some setups with the Regioes mod, zombies can get stuck in an undying state if the region processing does not handle them correctly (conflict with the extra Hits system).
+[*] Nemesis zombies can get stuck on doors and windows easily.
+[*] Nemesis may fail to pathfind correctly when spawned too far away from the target player. 
+[*] In roleplay zones where door attacks do not deal damage, zombies attacking doors can still be converted into Nemesis, causing Nemesis to get stuck inside those roleplay areas.
 [/list]
 
 [hr][/hr]
