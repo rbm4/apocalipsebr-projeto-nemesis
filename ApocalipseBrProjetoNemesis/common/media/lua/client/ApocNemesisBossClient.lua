@@ -37,6 +37,30 @@ local function splitCSV(str, sep)
 	return result
 end
 
+-- Cached Nemesis/MrX outfit lookup. Populated at module registration and
+-- refreshed whenever sandbox options change, so hot paths (per-hit failsafe,
+-- clothing updated, etc.) don't re-tokenize the sandbox string each call.
+---@type table<string, boolean>
+local cachedOutfitSet = {}
+local function rebuildOutfitSet()
+	local sv = SandboxVars.ApocalipseBrProjetoNemesis
+	local names = splitCSV(sv and sv.OutfitName or "Nemesis")
+	if #names == 0 then
+		names = { "Nemesis" }
+	end
+	local set = {}
+	for _, n in ipairs(names) do
+		set[n] = true
+	end
+	cachedOutfitSet = set
+	return names
+end
+Events.OnGameBoot.Add(rebuildOutfitSet)
+-- SandboxOptions can be mutated live by admin tools; keep the cache fresh.
+if Events.OnSandboxOptionsChanged then
+	Events.OnSandboxOptionsChanged.Add(rebuildOutfitSet)
+end
+
 local function registerNemesisClientModule()
 	if configLoaded then return end
 	configLoaded = true
@@ -65,6 +89,12 @@ local function registerNemesisClientModule()
 	if #outfitNames == 0 then
 		outfitNames = { "Nemesis" }
 	end
+	-- Keep the shared cached lookup in sync with what the module is using.
+	local set = {}
+	for _, n in ipairs(outfitNames) do
+		set[n] = true
+	end
+	cachedOutfitSet = set
 
 	RegionManager.ZombieModules.register({
 		id = "nemesis",
@@ -197,10 +227,13 @@ local function onNemesisConvertCommand(module, command, args)
 			local modData = zombie:getModData()
 
 			-- Dress the zombie AFTER the makeInactive cycle so the outfit
-			-- survives. resetModel forces the 3D mesh to rebuild.
+			-- survives. We use resetModelNextFrame() rather than resetModel()
+			-- so the mesh rebuild is deferred off the conversion frame --
+			-- makeInactive already forces one rebuild, and stacking a second
+			-- synchronous resetModel() here was a measurable stutter source.
 			if outfitName then
 				zombie:dressInNamedOutfit(outfitName)
-				zombie:resetModel()
+				zombie:resetModelNextFrame()
 			end
 
 			-- Cache the raw payload for speed revalidation
@@ -339,13 +372,13 @@ Events.OnClothingUpdated.Add(onClothingUpdated)
 
 local function isNemesisOutfit(outfit)
 	if not outfit then return false end
-	local sv = SandboxVars.ApocalipseBrProjetoNemesis
-	local names = splitCSV(sv and sv.OutfitName or "Nemesis")
-	if #names == 0 then
-		names = { "Nemesis" }
-	end
-	for _, n in ipairs(names) do
-		if outfit == n then return true end
+	-- Fast path: module-level cache populated at boot and on sandbox change.
+	if cachedOutfitSet[outfit] then return true end
+	-- Cold path / cache miss: rebuild once then recheck. Handles the edge case
+	-- where this helper runs before OnGameBoot fires during very early events.
+	if next(cachedOutfitSet) == nil then
+		rebuildOutfitSet()
+		if cachedOutfitSet[outfit] then return true end
 	end
 	return false
 end

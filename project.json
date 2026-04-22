@@ -6,9 +6,9 @@
     ],
     "workshop": {
         "id":3706463588,
-        "visibility": "unlisted",
+        "visibility": "public",
         "tags": [
-            "Build 42"
+            "Build 42","Hardmode","Multiplayer","Pop Culture"
         ],
         "excludes": []
     },
