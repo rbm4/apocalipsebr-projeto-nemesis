@@ -42,6 +42,7 @@ end
 -- clothing updated, etc.) don't re-tokenize the sandbox string each call.
 ---@type table<string, boolean>
 local cachedOutfitSet = {}
+local cachedOutfitSetReady = false
 local function rebuildOutfitSet()
 	local sv = SandboxVars.ApocalipseBrProjetoNemesis
 	local names = splitCSV(sv and sv.OutfitName or "Nemesis")
@@ -53,6 +54,7 @@ local function rebuildOutfitSet()
 		set[n] = true
 	end
 	cachedOutfitSet = set
+	cachedOutfitSetReady = true
 	return names
 end
 Events.OnGameBoot.Add(rebuildOutfitSet)
@@ -95,6 +97,7 @@ local function registerNemesisClientModule()
 		set[n] = true
 	end
 	cachedOutfitSet = set
+	cachedOutfitSetReady = true
 
 	RegionManager.ZombieModules.register({
 		id = "nemesis",
@@ -372,12 +375,26 @@ Events.OnClothingUpdated.Add(onClothingUpdated)
 
 local function isNemesisOutfit(outfit)
 	if not outfit then return false end
+	if type(cachedOutfitSet) ~= "table" then
+		cachedOutfitSet = {}
+		cachedOutfitSetReady = false
+	end
 	-- Fast path: module-level cache populated at boot and on sandbox change.
 	if cachedOutfitSet[outfit] then return true end
 	-- Cold path / cache miss: rebuild once then recheck. Handles the edge case
 	-- where this helper runs before OnGameBoot fires during very early events.
-	if next(cachedOutfitSet) == nil then
-		rebuildOutfitSet()
+	if not cachedOutfitSetReady then
+		local sv = SandboxVars and SandboxVars.ApocalipseBrProjetoNemesis
+		local names = splitCSV(sv and sv.OutfitName or "Nemesis")
+		if #names == 0 then
+			names = { "Nemesis" }
+		end
+		local set = {}
+		for _, n in ipairs(names) do
+			set[n] = true
+		end
+		cachedOutfitSet = set
+		cachedOutfitSetReady = true
 		if cachedOutfitSet[outfit] then return true end
 	end
 	return false
@@ -404,7 +421,11 @@ local function scrubLeakedNemesisToughness(zombie)
 	if modData.Apocalipse_TSY_ForceModuleId == "nemesis" then
 		return false
 	end
-	if isNemesisOutfit(zombie:getOutfitName()) then
+	local outfitName = nil
+	if zombie.getOutfitName then
+		outfitName = zombie:getOutfitName()
+	end
+	if isNemesisOutfit(outfitName) then
 		return false
 	end
 
@@ -419,7 +440,7 @@ local function scrubLeakedNemesisToughness(zombie)
 
 	print("[ApocNemesisBoss] Failsafe: scrubbed leaked Nemesis toughness from " ..
 		  "zombie onlineID=" .. tostring(zombie:getOnlineID()) ..
-		  " outfit=" .. tostring(zombie:getOutfitName()))
+		  " outfit=" .. tostring(outfitName))
 	return true
 end
 

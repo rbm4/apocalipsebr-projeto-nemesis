@@ -109,8 +109,7 @@ Admins can manually summon a Nemesis or Mr. X at any coordinates (though this fa
 [h2]Known Issues[/h2]
 
 [list]
-[*] In some setups with the Regioes mod, zombies can get stuck in an undying state if the region processing does not handle them correctly (conflict with the extra Hits system).
-[*] Nemesis zombies can get stuck on doors and windows easily.
+[*] Nemesis zombies can get stuck attacking doors and windows easily.
 [*] Nemesis may fail to pathfind correctly when spawned too far away from the target player. 
 [*] In roleplay zones where door attacks do not deal damage, zombies attacking doors can still be converted into Nemesis, causing Nemesis to get stuck inside those roleplay areas.
 [/list]
@@ -120,6 +119,5 @@ Admins can manually summon a Nemesis or Mr. X at any coordinates (though this fa
 [h2]Credits[/h2]
 
 [list]
-[*] [b]B42 port:[/b] Hypothetic
-[*] [b]Original B41 ResidentEvilNemesis mod & assets:[/b] Nemeth
+[*] [b]Original B41 ResidentEvilNemesis assets:[/b] Nemeth
 [/list]
