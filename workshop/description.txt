@@ -1,4 +1,4 @@
-[h1]ApocalipseBR Projeto Nemesis[/h1]
+[h1]ApocalipseBR - Projeto Nemesis[/h1]
 [i]Build 42 - Multiplayer Compatible[/i]
 
 A Resident Evil–inspired boss zombie mod that brings the relentless Nemesis to Project Zomboid. He will find you.
@@ -16,8 +16,6 @@ It works by converting a zombie inside a range to the infamous Nemesis, and he's
 [*] [b]Hawk vision & pinpoint hearing[/b] - he detects you from far away.
 [*] [b]Long memory & navigation[/b] - he remembers where you are and pathfinds toward you.
 [*] [b]Active redirect[/b] - even if distracted, he re-targets the nearest player every few seconds.
-[*] [b]97% scratch & bullet defense[/b] - conventional weapons are mostly ineffective; plan accordingly.
-[*] [b]50 kill XP bonus[/b] - if you manage to take him down, you earn it.
 [/list]
 
 Also includes the [b]Mr. X outfit[/b] as a secondary visual variant. Mr. X is slightly less armored but still uses the same boss module stats.
@@ -84,12 +82,14 @@ Everything is tunable from the server sandbox settings page:
 
 [h2]Admin Commands[/h2]
 
-Admins can manually summon a Nemesis or Mr. X at any coordinates (though this fails sometimes and i couldn't figure out why):
+Admins can manually summon a Nemesis or Mr. X at any coordinates (though this fails to summon the zombie sometimes and i couldn't figure out why):
 
 [code]
 /createhorde2 -x 10600 -y 9800 -z 0 -count 1 -outfit Nemesis -health 4.5
 /createhorde2 -x 10600 -y 9800 -z 0 -count 1 -outfit MrX -health 2.0
 [/code]
+
+There's one detail about summoning them by hand is that the code that spawns it contains a set of properties that are set to the zombie during the conversion of a normal zombie into nemesis, there is no way for me to hook into the spawn zombie command, use this as a command to test the outfit, but summoning this way will not apply any of the Nemesis actual features like sprinting or the sounds. It is a technical limitation of the engine that would make everything just harder to code.
 
 [hr][/hr]
 
@@ -109,12 +109,19 @@ Admins can manually summon a Nemesis or Mr. X at any coordinates (though this fa
 [h2]Known Issues[/h2]
 
 [list]
-[*] Nemesis zombies can get stuck attacking doors and windows easily.
-[*] Nemesis may fail to pathfind correctly when spawned too far away from the target player. 
-[*] In roleplay zones where door attacks do not deal damage, zombies attacking doors can still be converted into Nemesis, causing Nemesis to get stuck inside those roleplay areas.
+[*] Nemesis zombies can get stuck attacking doors and windows easily. [FIXED] - He breaks doors and barricades despite roleplay state
+[*] Nemesis may fail to pathfind correctly when spawned too far away from the target player. [Not something i can fix] - I've limited the maximum range in sandbox to an acceptable value to avoid missconfiguration
+[*] In roleplay zones where door attacks do not deal damage, zombies attacking doors can still be converted into Nemesis, causing Nemesis to get stuck inside those roleplay areas. [FIXED] - the same fix of Nemesis getting stuck on doors and windows easily apply here
 [/list]
 
+No knwon issues are in place anymore, if you have any issue feel free to share!
+
 [hr][/hr]
+
+[h2]Future planned features[/h2]
+[list]
+[*] Rare items drop table: guns, ammo, armor, etc
+[/list]
 
 [h2]Credits[/h2]
 
