@@ -1,4 +1,4 @@
-[h1]ApocalipseBR - Projeto Nemesis[/h1]
+﻿[h1]ApocalipseBR - Projeto Nemesis[/h1]
 [i]Build 42 - Multiplayer Compatible[/i]
 
 A Resident Evil–inspired boss zombie mod that brings the relentless Nemesis to Project Zomboid. He will find you.
@@ -16,6 +16,7 @@ It works by converting a zombie inside a range to the infamous Nemesis, and he's
 [*] [b]Hawk vision & pinpoint hearing[/b] - he detects you from far away.
 [*] [b]Long memory & navigation[/b] - he remembers where you are and pathfinds toward you.
 [*] [b]Active redirect[/b] - even if distracted, he re-targets the nearest player every few seconds.
+[*] [b]Doors and barricades[/b] - Nemesis does an icreased damage to doors and barricades, there's no stopping him.
 [/list]
 
 Also includes the [b]Mr. X outfit[/b] as a secondary visual variant. Mr. X is slightly less armored but still uses the same boss module stats.
